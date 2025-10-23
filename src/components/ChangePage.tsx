@@ -6,13 +6,7 @@ import styles from '@/styles/components/ChangePage.module.css';
 
 export default function ScrollManager() {
     const pathname = usePathname();
-    
     useEffect(() => {
-        const header = document.querySelector('header');
-        if (header) {
-            header.style.setProperty('--scroll-progress', '0');
-        }
-        
         window.scrollTo({
             top: 0,
             behavior: 'instant'

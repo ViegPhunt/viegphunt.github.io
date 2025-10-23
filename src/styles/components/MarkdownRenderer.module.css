@@ -286,7 +286,7 @@
 .markdown p img[width] {
     display: inline-block;
     vertical-align: top;
-    margin: 0.25rem;
+    margin: 5px 0;
 }
 
 .markdown p[align="center"] {
