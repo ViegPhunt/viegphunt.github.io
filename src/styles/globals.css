@@ -55,9 +55,9 @@ body::-webkit-scrollbar,
 
 /* Container */
 .container {
-    min-height: calc(100vh - var(--height-header) - var(--height-footer));
+    min-height: calc(100vh - var(--height-footer));
     margin: auto;
-    padding-top: 80px;
+    padding-top: calc(var(--height-header) + 80px);
     padding-bottom: 100px;
     display: flex;
     flex-direction: column;
@@ -95,7 +95,7 @@ body::-webkit-scrollbar,
 @media (max-width: 1150px) {
     /* Main content */
     .site-main {
-        margin: var(--height-header) 0 0;
+        margin: 0;
     }
     
     /* Divider */

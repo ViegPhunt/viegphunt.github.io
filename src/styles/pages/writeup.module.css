@@ -95,7 +95,7 @@
 /* For 1150px wide devices */
 @media (max-width: 1150px) {
     .writeupContainer {
-        padding: 73px 0 0 !important;
+        padding: calc(var(--height-header) + 60px) 0 0 !important;
     }
 
     .twoColumnLayout {

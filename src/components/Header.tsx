@@ -7,51 +7,47 @@ import styles from '@/styles/components/Header.module.css';
 
 export default function Header() {
     const pathname = usePathname();
-    const [scrollProgress, setScrollProgress] = useState(0);
     const [scrollDir, setScrollDir] = useState<'up' | 'down'>('up');
-    const [lastScrollY, setLastScrollY] = useState(0);
-    const [isMounted, setIsMounted] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const overlayRef = useRef<HTMLDivElement>(null);
+    const lastYRef = useRef(0);
+    const tickingRef = useRef(false);
 
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!isMounted) return;
-
-        let ticking = false;
-
         const handleScroll = () => {
-            const scrollTop = window.scrollY;
-            const maxScroll = 20;
-            const progress = Math.min(scrollTop / maxScroll, 1);
-            setScrollProgress(progress);
+            const y = window.scrollY || 0;
 
-            const isMobile = window.matchMedia('(max-width: 1150px)').matches;
-            if (isMobile && Math.abs(scrollTop - lastScrollY) > 50) {
-                setScrollDir(scrollTop > lastScrollY ? 'down' : 'up');
-                setLastScrollY(scrollTop);
+            if (y <= 8) {
+                if (scrollDir !== 'up') setScrollDir('up');
+                lastYRef.current = y;
+                tickingRef.current = false;
+                return;
             }
 
-            ticking = false;
+            if (Math.abs(y - lastYRef.current) >= 24) {
+                setScrollDir(y > lastYRef.current ? 'down' : 'up');
+                lastYRef.current = y;
+            }
+            tickingRef.current = false;
         };
 
         const onScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(handleScroll);
-                ticking = true;
+            if (!tickingRef.current) {
+                tickingRef.current = true;
+                requestAnimationFrame(handleScroll);
             }
         };
 
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
-    }, [lastScrollY, isMounted]);
+    }, [scrollDir]);
 
     useEffect(() => {
         document.body.style.overflow = isMenuOpen ? 'hidden' : '';
     }, [isMenuOpen]);
+
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [pathname]);
 
     const getLinkClass = (href: string) => {
         const normalizedPathname = pathname.replace(/\/$/, '') || '/';
@@ -59,15 +55,12 @@ export default function Header() {
         return normalizedPathname === normalizedHref ? styles.focusItem : styles.navItem;
     };
 
-    const handleOverlayClick = () => setIsMenuOpen(false);
-
     return (
         <header
-            className={`${styles.siteHeader} ${scrollDir === 'down' ? styles.hide : styles.show}`}
-            style={{
-                '--scroll-progress': isMounted ? scrollProgress : 0
-            } as React.CSSProperties}
-            suppressHydrationWarning={true}
+            onMouseEnter={() => setScrollDir('up')}
+            className={`${styles.siteHeader} ${
+                isMenuOpen ? styles.show : scrollDir === 'down' ? styles.hide : styles.show
+            }`}
         >
             <div className={styles.headerContainer}>
                 <Link href="/" className={styles.logo}>ViegPhunt</Link>
@@ -81,9 +74,8 @@ export default function Header() {
                     </svg>
                 </div>
                 <div
-                    ref={overlayRef}
                     className={`${styles.overlay} ${isMenuOpen ? styles.active : ''}`}
-                    onClick={handleOverlayClick}
+                    onClick={() => setIsMenuOpen(false)}
                 />
                 <nav className={`${styles.navBar} ${isMenuOpen ? styles.navOpen : ''}`}>
                     <div className={styles.navLink}>
