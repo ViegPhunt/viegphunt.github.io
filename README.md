@@ -8,11 +8,11 @@
 ```
 src/
 	app/
+		layout.tsx        # Root layout
 		page.tsx          # Home page
 		about/            # About page
 		projects/         # Projects listing
 		writeup/          # Write-ups (Markdown based)
-		layout.tsx        # Root layout
 	components/         # Reusable UI pieces
 	hooks/              # Custom React hooks
 	lib/                # Utility modules (e.g. GitHub API, static loader)
