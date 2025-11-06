@@ -367,7 +367,6 @@
     .codeContainer code,
     .codeContainer pre {
         padding: 0;
-        font-size: 1em !important;
     }
 
     .copyButton {
@@ -382,4 +381,5 @@
     }
 
 }
+
 
