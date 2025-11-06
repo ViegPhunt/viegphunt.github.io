@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatedBox } from '@/components/ChangePage';
 import { useMarkdownFetcher } from '@/hooks/useMarkdownFetcher';
@@ -9,13 +9,41 @@ import { fetchWriteupTree, TreeNode } from '@/lib/github-api';
 import { FileText, Folder, FolderOpen } from 'lucide-react';
 import styles from "@/styles/pages/writeup.module.css";
 
+// Breakpoint for mobile layout
+const MOBILE_BREAKPOINT = 1150;
+
+// Portal component for rendering elements outside the DOM hierarchy, used for mobile sidebar overlay
 function Portal({ children }: { children: React.ReactNode }) {
     if (typeof window === 'undefined') return null;
     return createPortal(children, document.body);
 }
 
+// Recursively find a tree node by its path
+const findNodeByPath = (nodes: TreeNode[], targetPath: string): TreeNode | null => {
+    for (const node of nodes) {
+        if (node.path === targetPath) return node;
+        if (node.children) {
+            const found = findNodeByPath(node.children, targetPath);
+            if (found) return found;
+        }
+    }
+    return null;
+};
+
+// Get all parent folder paths that should be expanded for a given path
+const getExpandedParents = (path: string): Set<string> => {
+    const pathParts = path.split('/');
+    const expanded = new Set<string>();
+    for (let i = 1; i < pathParts.length; i++) {
+        expanded.add(pathParts.slice(0, i).join('/'));
+    }
+    return expanded;
+};
+
+// CTF WriteUp page component
 export default function CTFWriteUp() {
     const [selectedReadme, setSelectedReadme] = useState<string | null>(null);
+    const [selectedFolder, setSelectedFolder] = useState<TreeNode | null>(null);
     const [tree, setTree] = useState<TreeNode[]>([]);
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
     const [treeLoading, setTreeLoading] = useState(true);
@@ -24,6 +52,7 @@ export default function CTFWriteUp() {
     const overlayRef = useRef<HTMLDivElement>(null);
     const [headerVisible, setHeaderVisible] = useState(true);
 
+    // Monitor header visibility for proper sidebar positioning
     useEffect(() => {
         const waitForHeader = () => {
             const header = document.querySelector('[class*="siteHeader"]');
@@ -49,69 +78,230 @@ export default function CTFWriteUp() {
         waitForHeader();
     }, []);
 
+    // Fetch markdown content for selected README file
     const { content, loading: markdownLoading, error, githubUrl } = useMarkdownFetcher({
         path: selectedReadme, repo: 'ViegPhunt/CTF-WriteUps', autoFetch: selectedReadme !== null
     });
 
+    // Load writeup tree structure on component mount
     useEffect(() => {
         const loadTree = async () => {
-            try { setTreeLoading(true); setTree(await fetchWriteupTree()); }
-            finally { setTreeLoading(false); }
+            try {
+                setTreeLoading(true);
+                const fetchedTree = await fetchWriteupTree();
+                setTree(fetchedTree);
+            } finally {
+                setTreeLoading(false);
+            }
         };
         loadTree();
     }, []);
 
+    // Handle URL hash navigation to load specific files/folders
     useEffect(() => {
-        const mql = window.matchMedia('(max-width: 1150px)');
-        const apply = () => setIsMobile(mql.matches);
-        apply();
+        if (tree.length === 0) return;
+
+        const loadFromHash = () => {
+            const hash = window.location.hash.slice(1);
+            if (!hash) {
+                setSelectedReadme(null);
+                setSelectedFolder(null);
+                return;
+            }
+
+            const decodedHash = decodeURIComponent(hash);
+            const node = findNodeByPath(tree, decodedHash);
+            if (!node) return;
+
+            const expandedParents = getExpandedParents(node.path);
+
+            // If node has README, display it
+            if (node.hasReadme) {
+                setSelectedReadme(`${node.path}/README.md`);
+                setSelectedFolder(null);
+                setExpandedFolders(expandedParents);
+            } else if (node.type === 'dir') {
+                // Otherwise, show folder contents
+                setSelectedFolder(node);
+                setSelectedReadme(null);
+                expandedParents.add(node.path);
+                setExpandedFolders(expandedParents);
+            }
+        };
+
+        loadFromHash();
+        window.addEventListener('popstate', loadFromHash);
+        return () => window.removeEventListener('popstate', loadFromHash);
+    }, [tree]);
+
+    // Detect mobile screen size
+    useEffect(() => {
+        const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+        const handleChange = () => setIsMobile(mql.matches);
+        
+        handleChange();
+        
+        // Use modern API if available, fallback to deprecated API for older browsers
         if (typeof mql.addEventListener === 'function') {
-            mql.addEventListener('change', apply);
-            return () => mql.removeEventListener('change', apply);
+            mql.addEventListener('change', handleChange);
+            return () => mql.removeEventListener('change', handleChange);
         } else {
-            mql.addListener(apply);
-            return () => mql.removeListener(apply);
+            mql.addListener(handleChange);
+            return () => mql.removeListener(handleChange);
         }
     }, []);
 
+    // Prevent body scrolling when mobile menu is open
     useEffect(() => {
         document.body.style.overflow = isMenuOpen ? 'hidden' : '';
     }, [isMenuOpen]);
 
+    // Close mobile overlay when clicked
     const handleOverlayClick = () => setIsMenuOpen(false);
 
-    const toggleFolder = (path: string) => {
+    // Toggle folder expanded/collapsed state
+    const toggleFolder = useCallback((path: string) => {
         setExpandedFolders(prev => {
-            const s = new Set(prev);
-            s.has(path) ? s.delete(path) : s.add(path);
-            return s;
+            const newSet = new Set(prev);
+            newSet.has(path) ? newSet.delete(path) : newSet.add(path);
+            return newSet;
         });
-    };
+    }, []);
 
-    const handleFolderClick = (node: TreeNode) => {
-        if (node.hasReadme) {
-            setSelectedReadme(`${node.path}/README.md`);
-        } else {
-            toggleFolder(node.path);
-        }
-    };
+    // Update URL hash with folder/file path
+    const updateUrlHash = useCallback((path: string) => {
+        window.history.pushState(null, '', `#${encodeURIComponent(path)}`);
+    }, []);
 
-    const handlePageClick = (node: TreeNode) => {
-        setSelectedReadme(`${node.path}/README.md`);
+    // Close mobile menu if in mobile mode
+    const closeMenuIfMobile = useCallback(() => {
         if (isMobile && isMenuOpen) {
             setIsMenuOpen(false);
         }
+    }, [isMobile, isMenuOpen]);
+
+    // Handle folder click in tree view
+    const handleFolderClick = useCallback((node: TreeNode, shouldToggle: boolean = true) => {
+        if (node.hasReadme) {
+            // Folder with README - show README
+            setSelectedReadme(`${node.path}/README.md`);
+            setSelectedFolder(null);
+            updateUrlHash(node.path);
+        } else {
+            // Regular folder - toggle expansion or set as selected
+            if (shouldToggle) {
+                toggleFolder(node.path);
+            } else {
+                const expandedParents = getExpandedParents(node.path);
+                expandedParents.add(node.path);
+                setExpandedFolders(expandedParents);
+            }
+
+            setSelectedFolder(node);
+            setSelectedReadme(null);
+            updateUrlHash(node.path);
+            closeMenuIfMobile();
+        }
+    }, [toggleFolder, updateUrlHash, closeMenuIfMobile]);
+
+    // Handle page (README) click in folder contents view
+    const handlePageClick = useCallback((node: TreeNode) => {
+        setSelectedReadme(`${node.path}/README.md`);
+        setSelectedFolder(null);
+        updateUrlHash(node.path);
+        closeMenuIfMobile();
+    }, [updateUrlHash, closeMenuIfMobile]);
+
+    //  Build breadcrumb navigation from folder path
+    const buildBreadcrumbs = useCallback((folder: TreeNode) => {
+        const pathParts = folder.path.split('/').filter(p => p);
+        const breadcrumbs: { name: string; path: string }[] = [];
+
+        for (let i = 0; i < pathParts.length; i++) {
+            const path = pathParts.slice(0, i + 1).join('/');
+            breadcrumbs.push({ name: pathParts[i], path });
+        }
+
+        return breadcrumbs;
+    }, []);
+
+    // Handle breadcrumb click navigation
+    const handleBreadcrumbClick = useCallback((path: string) => {
+        const node = findNodeByPath(tree, path);
+        if (!node) return;
+
+        const expandedParents = getExpandedParents(node.path);
+        
+        // Expand folder if it's a directory without README
+        if (node.type === 'dir' && !node.hasReadme) {
+            expandedParents.add(node.path);
+        }
+        
+        setExpandedFolders(expandedParents);
+
+        // Navigate to appropriate view
+        if (node.hasReadme) {
+            handlePageClick(node);
+        } else if (node.type === 'dir') {
+            handleFolderClick(node, false);
+        }
+    }, [tree, handlePageClick, handleFolderClick]);
+
+    // Render folder contents with breadcrumbs and child items
+    const renderFolderContents = (folder: TreeNode) => {
+        const breadcrumbs = buildBreadcrumbs(folder);
+
+        return (
+            <div className={styles.folderContents}>
+                <div className={styles.breadcrumbs}>
+                    {breadcrumbs.map((crumb, index) => (
+                        <span key={crumb.path}>
+                            {index > 0 && <span className={styles.breadcrumbSeparator}>/</span>}
+                            <span
+                                className={styles.breadcrumbItem}
+                                onClick={() => handleBreadcrumbClick(crumb.path)}
+                            >
+                                {crumb.name}
+                            </span>
+                        </span>
+                    ))}
+                </div>
+                <div className={styles.folderItemsList}>
+                    {folder.children?.map((child) => {
+                        const isPage = child.type === 'dir' && child.hasReadme;
+                        const isFolder = child.type === 'dir' && !child.hasReadme;
+
+                        return (
+                            <div
+                                key={child.path}
+                                className={styles.folderItem}
+                                onClick={() => {
+                                    if (isPage) {
+                                        handlePageClick(child);
+                                    } else if (isFolder) {
+                                        handleFolderClick(child, false);
+                                    }
+                                }}
+                            >
+                                <h3 className={styles.folderItemName}>{child.name}</h3>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
     };
 
+    // Render a tree node with proper indentation and icons
     const renderNode = (node: TreeNode, level: number = 0) => {
         const isExpanded = expandedFolders.has(node.path);
         const hasChildren = node.children && node.children.length > 0;
         
-        const isPage = node.type === 'dir' && node.hasReadme;
-        const isFolder = node.type === 'dir' && !node.hasReadme;
+        const isPage = node.type === 'dir' && node.hasReadme; // Folder with README
+        const isFolder = node.type === 'dir' && !node.hasReadme; // Regular folder
         
         return (
-            <div key={node.path} className={styles.treeNode}>
+            <div key={node.path} className={styles.treeNode} id={node.path}>
                 <div 
                     className={`${styles.nodeItem} ${isPage || isFolder ? styles.clickable : ''}`}
                     style={{ paddingLeft: `${level * 20 + 10}px` }}
@@ -194,14 +384,18 @@ export default function CTFWriteUp() {
                     )}
                     
                     <div className={styles.mainContent}>
-                        <MarkdownRenderer
-                            content={content}
-                            loading={markdownLoading}
-                            error={error}
-                            githubUrl={githubUrl}
-                            filePath={selectedReadme || ''}
-                            welcomeMessage={'CTF WriteUps'}
-                        />
+                        {selectedFolder ? (
+                            renderFolderContents(selectedFolder)
+                        ) : (
+                            <MarkdownRenderer
+                                content={content}
+                                loading={markdownLoading}
+                                error={error}
+                                githubUrl={githubUrl}
+                                filePath={selectedReadme || ''}
+                                welcomeMessage={'CTF WriteUps'}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

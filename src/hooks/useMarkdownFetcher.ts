@@ -16,32 +16,34 @@ interface UseMarkdownFetcherResult {
 }
 
 const DEFAULT_REPO = 'ViegPhunt/CTF-WriteUps';
+const BASE_RAW_URL = 'https://raw.githubusercontent.com';
 const BASE_WEB_URL = 'https://github.com';
+const BASE_API_URL = 'https://api.github.com/repos';
 
 export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkdownFetcherResult {
     const { url, path, repo = DEFAULT_REPO, autoFetch = true } = options;
-    
+
     const [content, setContent] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [githubUrl, setGithubUrl] = useState<string>('');
 
     const convertToRawUrl = useCallback((inputUrl: string): string => {
-        if (inputUrl.includes('raw.githubusercontent.com')) {
+        if (inputUrl.includes(BASE_RAW_URL)) {
             return inputUrl;
         }
 
         const webMatch = inputUrl.match(/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)/);
         if (webMatch) {
             const [, owner, repoName, branch, filePath] = webMatch;
-            return 'https://raw.githubusercontent.com/' + owner + '/' + repoName + '/' + branch + '/' + filePath;
+            return `${BASE_RAW_URL}/${owner}/${repoName}/${branch}/${filePath}`;
         }
 
         return inputUrl;
     }, []);
 
     const generateWebUrl = useCallback((repoName: string, filePath: string): string => {
-        return BASE_WEB_URL + '/' + repoName + '/blob/main/' + filePath;
+        return `${BASE_WEB_URL}/${repoName}/blob/main/${filePath}`;
     }, []);
 
     const fetchContent = useCallback(async () => {
@@ -61,20 +63,20 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
                     const blobMatch = url.match(/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)/);
                     if (blobMatch) {
                         const [, owner, repoName, branch, filePath] = blobMatch;
-                        apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}?ref=${branch}`;
+                        apiUrl = `${BASE_API_URL}/${owner}/${repoName}/contents/${filePath}?ref=${branch}`;
                     }
-                } else if (rawUrl.includes('raw.githubusercontent.com')) {
+                } else if (rawUrl.includes(BASE_RAW_URL)) {
                     const rawMatch = rawUrl.match(/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)/);
                     if (rawMatch) {
                         const [, owner, repoName, branch, filePath] = rawMatch;
-                        webUrl = generateWebUrl(owner + '/' + repoName, filePath);
-                        apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}?ref=${branch}`;
+                        webUrl = generateWebUrl(`${owner}/${repoName}`, filePath);
+                        apiUrl = `${BASE_API_URL}/${owner}/${repoName}/contents/${filePath}?ref=${branch}`;
                     }
                 }
             } else if (path) {
                 const [owner, repoName] = repo.split('/');
                 webUrl = generateWebUrl(repo, path);
-                apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}?ref=main`;
+                apiUrl = `${BASE_API_URL}/${owner}/${repoName}/contents/${path}?ref=main`;
             }
 
             if (!apiUrl) {
@@ -97,7 +99,7 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
             const response = await fetch(apiUrl, { headers });
 
             if (!response.ok) {
-                throw new Error('GitHub Error: ' + response.statusText + ' (' + response.status + ')');
+                throw new Error(`GitHub Error: ${response.statusText} (${response.status})`);
             }
 
             const data = await response.json();
@@ -108,8 +110,8 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                const content = new TextDecoder('utf-8').decode(bytes);
-                setContent(content);
+                const decodedContent = new TextDecoder('utf-8').decode(bytes);
+                setContent(decodedContent);
             } else {
                 throw new Error('No content found');
             }

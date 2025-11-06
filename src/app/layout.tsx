@@ -8,6 +8,7 @@ import ChangePage from "../components/ChangePage";
 import Footer from "../components/Footer";
 import Scrollbar from "../components/Scrollbar";
 
+//  Arial font configuration
 const arial = localFont({
     src: [
         {
@@ -35,6 +36,7 @@ const arial = localFont({
     display: 'swap',
 });
 
+//  JetBrains Mono font configuration
 const jetbrainsMono = localFont({
     src: [
         {
@@ -84,7 +86,9 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${arial.variable} ${jetbrainsMono.variable}`}>
             <body className='antialiased' suppressHydrationWarning>
+                {/* Page transition animations */}
                 <ChangePage />
+                {/* Custom scrollbar */}
                 <Scrollbar />
                 <div className="min-h-screen flex flex-col">
                     <Suspense fallback={<div style={{ height: '80px' }} />}>
@@ -93,6 +97,7 @@ export default function RootLayout({
                     <main className="flex-1 w-full site-main">
                         {children}
                     </main>
+                    {/* Scroll to top button */}
                     <ScrollToTop />
                     <Footer />
                 </div>

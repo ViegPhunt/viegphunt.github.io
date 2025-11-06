@@ -9,6 +9,12 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Scrollbar from './Scrollbar';
 import styles from '@/styles/components/MarkdownRenderer.module.css';
 
+// Constants for scroll behavior and UI timing
+const SCROLL_OFFSET = 60;
+const COPY_TIMEOUT = 2000;
+const SCROLL_CONTAINER_DELAY = 100;
+
+// Props interface for MarkdownRenderer component
 interface MarkdownRendererProps {
     content: string;
     loading?: boolean;
@@ -18,24 +24,30 @@ interface MarkdownRendererProps {
     welcomeMessage?: string;
 }
 
+// Custom code block component with syntax highlighting and copy functionality
 const CodeBlock = ({ children, className, ...props }: any) => {
     const [copied, setCopied] = useState(false);
     const codeContainerRef = useRef<HTMLDivElement>(null);
     const [actualScrollContainer, setActualScrollContainer] = useState<HTMLElement | null>(null);
     const actualScrollRef = useRef<HTMLElement | null>(null);
+    
+    // Extract language from className (e.g., "language-javascript" -> "javascript")
     const match = /language-(\w+)/.exec(className || '');
     const language = match ? match[1] : '';
     const code = String(children).replace(/\n$/, '');
     
+    // Determine if this is a code block (vs inline code)
     const isCodeBlock = className?.includes('language-') || 
                         className === 'hljs' || 
                         (typeof children === 'string' && children.includes('\n')) ||
                         props.node?.tagName === 'pre';
 
+    // Sync scroll container ref with state
     React.useEffect(() => {
         actualScrollRef.current = actualScrollContainer;
     }, [actualScrollContainer]);
 
+    // Find the actual scrollable container for code blocks
     React.useEffect(() => {
         const findScrollContainer = () => {
             if (!codeContainerRef.current) return;
@@ -50,17 +62,20 @@ const CodeBlock = ({ children, className, ...props }: any) => {
             }
         };
 
-        const timeoutId = setTimeout(findScrollContainer, 100);
+        // Delay to ensure DOM is ready before finding scroll container
+        const timeoutId = setTimeout(findScrollContainer, SCROLL_CONTAINER_DELAY);
         return () => clearTimeout(timeoutId);
     }, []);
 
+    // Copy code to clipboard
     const handleCopy = async () => {
         await navigator.clipboard.writeText(code);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), COPY_TIMEOUT);
     };
 
-return isCodeBlock ? (
+    // Render code block with syntax highlighting and copy button
+    return isCodeBlock ? (
         <div className={styles.codeWrapper}>
             <div ref={codeContainerRef} className={styles.codeContainer}>
                 <SyntaxHighlighter 
@@ -98,6 +113,7 @@ const createSlug = (text: string) => {
         .trim();
 };
 
+// Custom heading component that generates IDs for anchor links
 const HeadingComponent = ({ level, children, ...props }: any) => {
     const text = Children.toArray(children).join('');
     const slug = createSlug(text);
@@ -122,6 +138,32 @@ const HeadingComponent = ({ level, children, ...props }: any) => {
     }
 };
 
+// Scroll to an element with a smooth animation and offset for fixed header
+const scrollToElement = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const scrollPosition = elementPosition - SCROLL_OFFSET;
+    
+    window.scrollTo({
+        top: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+    });
+};
+
+// Update URL hash to include repository name and heading ID
+const updateHashWithHeading = (targetId: string) => {
+    const currentHash = window.location.hash.slice(1);
+    const parts = currentHash.split('/');
+    const repoName = parts[0];
+    
+    if (repoName) {
+        window.history.replaceState(null, '', `#${repoName}/${targetId}`);
+    }
+};
+
+// Main MarkdownRenderer component
 function MarkdownRendererComponent({
     content,
     loading = false,
@@ -130,22 +172,27 @@ function MarkdownRendererComponent({
     filePath = '',
     welcomeMessage,
 }: MarkdownRendererProps) {
+    // Transform relative image URLs to absolute GitHub URLs
     const transformImageUrl = (src: string) => {
         if (!filePath || !src) return src;
         if (src.startsWith('http') || src.startsWith('/')) return src;
 
+        // Construct absolute URL from relative path
         const basePath = filePath.substring(0, filePath.lastIndexOf('/'));
         return new URL(`${basePath}/${src}`, 'https://raw.githubusercontent.com/ViegPhunt/CTF-WriteUps/main/').href;
     };
 
+    // Show welcome message when no content is loaded
     if (!content && !loading && !error && welcomeMessage) {
         return <div className={styles.welcome}><h2>{welcomeMessage}</h2></div>;
     }
 
+    // Show loading state
     if (loading) {
         return <div className={styles.loading}>Loading content...</div>;
     }
 
+    // Show error state with link to GitHub
     if (error) {
         return (
             <div className={styles.error}>
@@ -190,8 +237,22 @@ function MarkdownRendererComponent({
                             );
                         }
                         
-                        const isInternalLink = href?.startsWith('#') || 
-                                                href?.startsWith('/') || 
+                        if (href?.startsWith('#')) {
+                            const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+                                e.preventDefault();
+                                const targetId = href.slice(1);
+                                updateHashWithHeading(targetId);
+                                scrollToElement(targetId);
+                            };
+                            
+                            return (
+                                <a href={href} onClick={handleAnchorClick} {...props}>
+                                    {children}
+                                </a>
+                            );
+                        }
+                        
+                        const isInternalLink = href?.startsWith('/') || 
                                                 (!href?.startsWith('http') && !href?.startsWith('mailto:'));
                         
                         if (isInternalLink) {

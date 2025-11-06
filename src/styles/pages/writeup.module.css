@@ -1,3 +1,8 @@
+.writeupContainer {
+    margin-left: -8%;
+    margin-right: -8%;
+}
+
 .twoColumnLayout {
     width: 100%;
     display: grid;
@@ -66,6 +71,73 @@
     flex-shrink: 0;
 }
 
+/* Main Content */
+.mainContent {
+    min-height: calc(100vh - var(--height-header) - var(--height-footer) - 100px);
+    height: fit-content;
+    background: var(--color-bg);
+    border-radius: 15px;
+    border: 1px solid var(--color-border-dark);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+    overflow-x: auto;
+}
+
+.folderContents {
+    padding: 2rem;
+}
+
+.breadcrumbs {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.breadcrumbItem {
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+}
+
+.breadcrumbItem:hover {
+    text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+    margin: 0 0.25rem;
+    user-select: none;
+}
+
+.folderItemsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.folderItem {
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.folderItem:hover {
+    border-color: var(--color-text);
+    transform: translateY(-2px);
+}
+
+.folderItemName {
+    font-size: 1.1rem;
+    word-break: break-word;
+    text-align: center;
+}
+
 .nodeName {
     color: var(--color-text);
     font-size: 1.2rem;
@@ -81,20 +153,10 @@
     opacity: 0.7;
 }
 
-/* Main Content */
-.mainContent {
-    min-height: calc(100vh - var(--height-header) - var(--height-footer) - 180px);
-    height: fit-content;
-    background: var(--color-bg);
-    border-radius: 15px;
-    border: 1px solid var(--color-border-dark);
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-    overflow-x: auto;
-}
-
 /* For 1150px wide devices */
 @media (max-width: 1150px) {
     .writeupContainer {
+        margin: 0px;
         padding: calc(var(--height-header) + 60px) 0 0 !important;
     }
 
@@ -185,7 +247,7 @@
         padding-bottom: 100px;
         margin: 0 1rem;
     }
-    
+
     /* Main Content */
     .mainContent {
         padding: 0 1rem 50px;
@@ -194,5 +256,19 @@
         border-radius: 0;
         border: 0;
         box-shadow: none;
+    }
+
+    .folderContents {
+        padding: 1.5rem 1rem;
+    }
+
+    .breadcrumbs {
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
+
+    .folderItemName {
+        font-size: 1rem;
+        font-weight: 500;
     }
 }
