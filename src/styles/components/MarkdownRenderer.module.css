@@ -162,7 +162,7 @@
     padding: 0;
     background: none;
     border: none;
-    font-size: 1em !important;
+    font-size: 0.9em !important;
     line-height: 1.5 !important;
 }
 .copyButton {
@@ -367,7 +367,6 @@
     .codeContainer code,
     .codeContainer pre {
         padding: 0;
-        font-size: 0.9em !important;
     }
 
     .copyButton {
@@ -380,4 +379,5 @@
         vertical-align: top;
         margin: 5px 0;
     }
+
 }
