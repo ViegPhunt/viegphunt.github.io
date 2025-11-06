@@ -87,7 +87,7 @@ body::-webkit-scrollbar,
     font-weight: 600;
 }
 .errorLinkBackup {
-    color: #89b4fa;
+    color: var(--color-link);
     text-decoration: underline;
 }
 

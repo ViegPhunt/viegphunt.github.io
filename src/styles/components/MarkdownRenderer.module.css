@@ -32,7 +32,7 @@
 }
 .error a {
     font-size: 1.1rem;
-    color: #89b4fa;
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -88,7 +88,7 @@
 }
 
 .markdown a {
-    color: #89b4fa;
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 3px;
 }

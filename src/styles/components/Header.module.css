@@ -1,9 +1,9 @@
 .siteHeader {
     position: fixed;
     height: var(--height-header);
-    width: 85%;
-    padding: 0 7.5%;
-    margin: 0 7.5%;
+    width: 80%;
+    padding: 0 3%;
+    margin: 0 10%;
     background: var(--color-bg);
     color: var(--color-text);
     box-shadow: 0 5px 20px var(--color-shadow-dark);
