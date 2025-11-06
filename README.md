@@ -23,8 +23,9 @@ projects.json         # Projects data source
 
 ## 🚀 Scripts
 ```bash
-npm run dev       # Start dev server (http://localhost:3000)
-npm run build     # Production build (generates .next)
+npm install			# Install dependencies
+npm run dev			# Start dev server (http://localhost:3000)
+npm run build		# Production build (generates .next)
 ```
 
 ## 📤 Deployment (GitHub Pages)

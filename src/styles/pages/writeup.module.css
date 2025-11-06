@@ -1,6 +1,6 @@
 .writeupContainer {
-    margin-left: -8%;
-    margin-right: -8%;
+    margin-left: -8% !important;
+    margin-right: -8% !important;
 }
 
 .twoColumnLayout {
@@ -156,7 +156,7 @@
 /* For 1150px wide devices */
 @media (max-width: 1150px) {
     .writeupContainer {
-        margin: 0px;
+        margin: 0px !important;
         padding: calc(var(--height-header) + 60px) 0 0 !important;
     }
 
