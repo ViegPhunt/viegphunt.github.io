@@ -1,10 +1,11 @@
 .writeupContainer {
-    margin-left: -8% !important;
-    margin-right: -8% !important;
+    margin-left: -10% !important;
+    margin-right: -10% !important;
 }
 
 .twoColumnLayout {
     width: 100%;
+    max-width: 1350px;
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 2rem;
@@ -272,3 +273,4 @@
         font-weight: 500;
     }
 }
+
