@@ -77,7 +77,7 @@ const jetbrainsMono = localFont({
 export const metadata: Metadata = {
     title: "ViegPhunt",
     description: "ViegPhunt's personal website",
-    icons: { icon: "./favicon.ico" },
+    icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
