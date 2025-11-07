@@ -71,7 +71,11 @@
     background: var(--color-bg-secondary);
 }
 
-.clearButton:active {
+.clearButton svg {
+    transition: all 0.3s ease;
+}
+
+.clearButton:active svg {
     transform: scale(0.9);
 }
 
