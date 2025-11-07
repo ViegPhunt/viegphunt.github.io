@@ -5,9 +5,9 @@
     --color-text: #ede0d4;
     --color-link: #89b4fa;
     --color-shadow-dark: rgba(0, 0, 0, 0.8);
-    --color-shadow-light: #ede0d4;
+    --color-shadow-light: rgba(237, 224, 212, 0.8);
     --color-divider: rgba(237, 224, 212, 0.3);
-    --color-border-light: rgba(237, 224, 212, 1);
+    --color-border-light: rgba(237, 224, 212, 0.6);
     --color-border-dark: rgba(255, 255, 255, 0.1);
 
     --height-header: 80px;
@@ -50,7 +50,9 @@ body::-webkit-scrollbar,
 
 /* Main content */
 .site-main {
-    margin: 0 15%;
+    width: 90%;
+    max-width: 1350px;
+    margin: 0 auto;
 }
 
 /* Container */
@@ -91,10 +93,11 @@ body::-webkit-scrollbar,
     text-decoration: underline;
 }
 
-/* For 1024px wide devices */
+/* For 1150px wide devices */
 @media (max-width: 1150px) {
     /* Main content */
     .site-main {
+        width: 100%;
         margin: 0;
     }
     

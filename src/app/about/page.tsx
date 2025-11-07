@@ -37,12 +37,7 @@ export default function About() {
         const parts = text.split(/(\*\*[^*]+\*\*)/g);
         return parts.map((part, index) => {
             if (part.startsWith('**') && part.endsWith('**')) {
-                const highlightedText = part.slice(2, -2);
-                return (
-                    <span key={index} className={styles.highlight}>
-                        {highlightedText}
-                    </span>
-                );
+                return <span key={index} className={styles.highlight}>{part.slice(2, -2)}</span>;
             }
             return part;
         });

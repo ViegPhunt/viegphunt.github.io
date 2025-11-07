@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatedBox } from '@/components/ChangePage';
 import { useMarkdownFetcher } from '@/hooks/useMarkdownFetcher';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
-import { fetchWriteupTree, TreeNode } from '@/lib/github-api';
-import { FileText, Folder, FolderOpen } from 'lucide-react';
+import { fetchWriteupTree, fetchAllWriteupArticles, TreeNode, WriteupArticle } from '@/lib/github-api';
+import { FileText, Folder, FolderOpen, Search, X } from 'lucide-react';
 import styles from "@/styles/pages/writeup.module.css";
 
 // Breakpoint for mobile layout
@@ -51,6 +51,8 @@ export default function CTFWriteUp() {
     const [isMobile, setIsMobile] = useState(false);
     const overlayRef = useRef<HTMLDivElement>(null);
     const [headerVisible, setHeaderVisible] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [allArticles, setAllArticles] = useState<WriteupArticle[]>([]);
 
     // Monitor header visibility for proper sidebar positioning
     useEffect(() => {
@@ -88,8 +90,12 @@ export default function CTFWriteUp() {
         const loadTree = async () => {
             try {
                 setTreeLoading(true);
-                const fetchedTree = await fetchWriteupTree();
+                const [fetchedTree, articles] = await Promise.all([
+                    fetchWriteupTree(),
+                    fetchAllWriteupArticles()
+                ]);
                 setTree(fetchedTree);
+                setAllArticles(articles);
             } finally {
                 setTreeLoading(false);
             }
@@ -180,37 +186,39 @@ export default function CTFWriteUp() {
         }
     }, [isMobile, isMenuOpen]);
 
-    // Handle folder click in tree view
-    const handleFolderClick = useCallback((node: TreeNode, shouldToggle: boolean = true) => {
+    // Navigate to a node (handles both README and folder display)
+    const navigateToNode = useCallback((node: TreeNode, shouldToggle: boolean = false) => {
         if (node.hasReadme) {
             // Folder with README - show README
             setSelectedReadme(`${node.path}/README.md`);
             setSelectedFolder(null);
-            updateUrlHash(node.path);
+            const expandedParents = getExpandedParents(node.path);
+            setExpandedFolders(expandedParents);
         } else {
-            // Regular folder - toggle expansion or set as selected
+            // Regular folder
             if (shouldToggle) {
                 toggleFolder(node.path);
             } else {
                 const expandedParents = getExpandedParents(node.path);
                 expandedParents.add(node.path);
                 setExpandedFolders(expandedParents);
+                setSelectedFolder(node);
+                setSelectedReadme(null);
             }
-
-            setSelectedFolder(node);
-            setSelectedReadme(null);
-            updateUrlHash(node.path);
-            closeMenuIfMobile();
         }
+        updateUrlHash(node.path);
+        closeMenuIfMobile();
     }, [toggleFolder, updateUrlHash, closeMenuIfMobile]);
+
+    // Handle folder click in tree view
+    const handleFolderClick = useCallback((node: TreeNode, shouldToggle: boolean = true) => {
+        navigateToNode(node, shouldToggle);
+    }, [navigateToNode]);
 
     // Handle page (README) click in folder contents view
     const handlePageClick = useCallback((node: TreeNode) => {
-        setSelectedReadme(`${node.path}/README.md`);
-        setSelectedFolder(null);
-        updateUrlHash(node.path);
-        closeMenuIfMobile();
-    }, [updateUrlHash, closeMenuIfMobile]);
+        navigateToNode(node, false);
+    }, [navigateToNode]);
 
     //  Build breadcrumb navigation from folder path
     const buildBreadcrumbs = useCallback((folder: TreeNode) => {
@@ -246,6 +254,66 @@ export default function CTFWriteUp() {
             handleFolderClick(node, false);
         }
     }, [tree, handlePageClick, handleFolderClick]);
+
+    // Filter articles and folders based on search query
+    const searchResults = useMemo(() => {
+        if (!searchQuery.trim()) return { articles: [], folders: [] };
+        
+        const query = searchQuery.toLowerCase().trim();
+        
+        // Search in articles (by title only, not folder name)
+        const matchingArticles = allArticles.filter(article => 
+            article.title.toLowerCase().includes(query)
+        );
+        
+        // Search in root folders (CTF competitions)
+        const matchingFolders: TreeNode[] = [];
+        tree.forEach(node => {
+            if (node.name.toLowerCase().includes(query)) {
+                matchingFolders.push(node);
+            }
+        });
+        
+        return { articles: matchingArticles, folders: matchingFolders };
+    }, [searchQuery, allArticles, tree]);
+
+    // Handle article click from search results
+    const handleArticleClick = useCallback((article: WriteupArticle) => {
+        const articleNode: TreeNode = {
+            name: article.title,
+            path: article.path,
+            type: 'dir',
+            hasReadme: true,
+            children: []
+        };
+        navigateToNode(articleNode, false);
+    }, [navigateToNode]);
+    
+    // Handle folder click from search results
+    const handleSearchFolderClick = useCallback((folder: TreeNode) => {
+        navigateToNode(folder, false);
+    }, [navigateToNode]);
+
+    // Render search result item
+    const renderSearchResultItem = (
+        key: string,
+        title: string,
+        subtitle: string,
+        icon: React.ReactNode,
+        onClick: () => void
+    ) => (
+        <div
+            key={key}
+            className={styles.searchResultItem}
+            onClick={onClick}
+        >
+            {icon}
+            <div className={styles.searchResultContent}>
+                <div className={styles.searchResultTitle}>{title}</div>
+                <div className={styles.searchResultPath}>{subtitle}</div>
+            </div>
+        </div>
+    );
 
     // Render folder contents with breadcrumbs and child items
     const renderFolderContents = (folder: TreeNode) => {
@@ -339,8 +407,68 @@ export default function CTFWriteUp() {
         ? <div className={styles.loading}>Loading folder structure...</div>
         : (
         <div className={styles.treeContainer}>
-            <div className={styles.treeHeader}>CTF WriteUps</div>
-            <div className={styles.treeContent}>{tree.map(n => renderNode(n))}</div>
+            <div className={styles.searchContainer}>
+                <div className={styles.searchInputWrapper}>
+                    <Search size={22} className={styles.searchIcon} />
+                    <input
+                        type="text"
+                        placeholder="Search articles..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={styles.searchInput}
+                    />
+                    {searchQuery && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                            className={styles.clearButton}
+                            aria-label="Clear search"
+                        >
+                            <X size={22} />
+                        </button>
+                    )}
+                </div>
+            </div>
+            {searchQuery.trim() && (searchResults.folders.length > 0 || searchResults.articles.length > 0) ? (
+                <div className={styles.searchResults}>
+                    {searchResults.folders.length > 0 && (
+                        <>
+                            <div className={styles.searchResultsHeader}>
+                                {searchResults.folders.length} competition{searchResults.folders.length !== 1 ? 's' : ''}
+                            </div>
+                            {searchResults.folders.map(folder => 
+                                renderSearchResultItem(
+                                    folder.path,
+                                    folder.name,
+                                    'CTF Competition',
+                                    <Folder size={22} className={styles.searchResultIcon} color="#ede0d4" />,
+                                    () => handleSearchFolderClick(folder)
+                                )
+                            )}
+                        </>
+                    )}
+                    {searchResults.articles.length > 0 && (
+                        <>
+                            <div className={styles.searchResultsHeader}>
+                                {searchResults.articles.length} article{searchResults.articles.length !== 1 ? 's' : ''}
+                            </div>
+                            {searchResults.articles.map(article => 
+                                renderSearchResultItem(
+                                    article.path,
+                                    article.title,
+                                    `in ${article.folderName}`,
+                                    <FileText size={22} className={styles.searchResultIcon} color="#89b4fa" />,
+                                    () => handleArticleClick(article)
+                                )
+                            )}
+                        </>
+                    )}
+                </div>
+            ) : searchQuery.trim() ? (
+                <div className={styles.noResults}>No results found</div>
+            ) : (
+                <div className={styles.treeContent}>{tree.map(n => renderNode(n))}</div>
+            )}
         </div>
         );
 
@@ -349,7 +477,12 @@ export default function CTFWriteUp() {
             <div className={`container ${styles.writeupContainer}`}>
                 {isMobile && (
                     <Portal>
-                        <div className={`${styles.menuButton} ${headerVisible ? styles.withHeader : styles.noHeader}`} 
+                        <div 
+                            className={`
+                                ${styles.menuButton} 
+                                ${headerVisible ? styles.withHeader : styles.noHeader}
+                                ${isMenuOpen ? styles.menuButtonHidden : ''}
+                            `}
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             aria-label="Toggle menu"
                         >

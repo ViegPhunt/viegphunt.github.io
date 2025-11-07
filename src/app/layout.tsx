@@ -11,26 +11,10 @@ import Scrollbar from "../components/Scrollbar";
 //  Arial font configuration
 const arial = localFont({
     src: [
-        {
-            path: '../fonts/arial/Arial.ttf',
-            weight: '400',
-            style: 'normal',
-        },
-        {
-            path: '../fonts/arial/Arial-Italic.ttf',
-            weight: '400',
-            style: 'italic',
-        },
-        {
-            path: '../fonts/arial/Arial-Bold.ttf',
-            weight: '700',
-            style: 'normal',
-        },
-        {
-            path: '../fonts/arial/Arial-BoldItalic.ttf',
-            weight: '700',
-            style: 'italic',
-        },
+        { path: '../fonts/arial/Arial.ttf', weight: '400', style: 'normal' },
+        { path: '../fonts/arial/Arial-Italic.ttf', weight: '400', style: 'italic' },
+        { path: '../fonts/arial/Arial-Bold.ttf', weight: '700', style: 'normal' },
+        { path: '../fonts/arial/Arial-BoldItalic.ttf', weight: '700', style: 'italic' },
     ],
     variable: '--font-arial',
     display: 'swap',
@@ -39,36 +23,12 @@ const arial = localFont({
 //  JetBrains Mono font configuration
 const jetbrainsMono = localFont({
     src: [
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Regular.ttf',
-            weight: '400',
-            style: 'normal',
-        },
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Italic.ttf',
-            weight: '400',
-            style: 'italic',
-        },
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBold.ttf',
-            weight: '600',
-            style: 'normal',
-        },
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBoldItalic.ttf',
-            weight: '600',
-            style: 'italic',
-        },
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Bold.ttf',
-            weight: '700',
-            style: 'normal',
-        },
-        {
-            path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-BoldItalic.ttf',
-            weight: '700',
-            style: 'italic',
-        },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Regular.ttf', weight: '400', style: 'normal' },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Italic.ttf', weight: '400', style: 'italic' },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBold.ttf', weight: '600', style: 'normal' },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBoldItalic.ttf', weight: '600', style: 'italic' },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-Bold.ttf', weight: '700', style: 'normal' },
+        { path: '../fonts/jetbrains-mono/JetBrainsMonoNerdFont-BoldItalic.ttf', weight: '700', style: 'italic' },
     ],
     variable: '--font-jetbrains-mono',
     display: 'swap',
@@ -80,9 +40,7 @@ export const metadata: Metadata = {
     icons: { icon: "/favicon.ico" },
 };
 
-export default function RootLayout({
-    children,
-    }: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className={`${arial.variable} ${jetbrainsMono.variable}`}>
             <body className='antialiased' suppressHydrationWarning>

@@ -1,4 +1,5 @@
 import projectsConfig from "../../projects.json";
+import { CacheManager } from "./cache";
 
 export type GitHubRepo = {
     name: string;
@@ -17,6 +18,13 @@ export type WriteupDir = {
     lastCommitDate?: string;
 };
 
+export type WriteupArticle = {
+    title: string;
+    path: string;
+    folderName: string;
+    lastCommitDate?: string;
+};
+
 export type TreeNode = {
     name: string;
     path: string;
@@ -28,6 +36,7 @@ export type TreeNode = {
 const WRITEUPS_OWNER = 'ViegPhunt';
 const WRITEUPS_REPO = 'CTF-WriteUps';
 const BASE_API_URL = 'https://api.github.com';
+const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
 const createHeaders = (): Record<string, string> => {
     const headers: Record<string, string> = {
@@ -45,18 +54,9 @@ const createHeaders = (): Record<string, string> => {
     return headers;
 };
 
-const handleApiResponse = async (response: Response, context: string) => {
-    if (response.status === 403) {
-        throw new Error(`Rate limit exceeded for ${context}`);
-    }
-    if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-    }
-    try {
-        return await response.json();
-    } catch (error) {
-        throw new Error(`Invalid JSON response for ${context}`);
-    }
+const handleApiResponse = async (response: Response) => {
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    return await response.json();
 };
 
 export const formatDate = (dateString: string): string => {
@@ -68,43 +68,38 @@ export const formatDate = (dateString: string): string => {
 };
 
 async function fetchRepository(repoName: string): Promise<GitHubRepo | null> {
+    const cacheKey = `repo_${repoName}`;
+    const cached = CacheManager.get<GitHubRepo>(cacheKey);
+    if (cached) return cached;
+
     try {
-        const url = `${BASE_API_URL}/repos/${repoName}`;
-        const response = await fetch(url, { headers: createHeaders() });
-        
-        const data = await handleApiResponse(response, `repository ${repoName}`);
+        const response = await fetch(`${BASE_API_URL}/repos/${repoName}`, { headers: createHeaders() });
+        const data = await handleApiResponse(response);
+        CacheManager.set(cacheKey, data, CACHE_DURATION);
         return data;
-    } catch (error) {
+    } catch {
         return null;
     }
 }
 
 export async function fetchAllRepositories(): Promise<GitHubRepo[]> {
-    const repoPromises = projectsConfig.repositories.map(repoName =>
-        fetchRepository(repoName)
-    );
-
-    const results = await Promise.all(repoPromises);
-    const validRepos = results.filter((repo): repo is GitHubRepo => repo !== null);
-
-    return validRepos;
+    return CacheManager.getOrFetch('all_repositories', async () => {
+        const results = await Promise.all(projectsConfig.repositories.map(fetchRepository));
+        return results.filter((repo): repo is GitHubRepo => repo !== null);
+    }, CACHE_DURATION);
 }
 
 async function fetchCommitDate(path: string): Promise<string | null> {
-    try {
-        const url = `${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/commits?path=${encodeURIComponent(path)}&per_page=1`;
-        const response = await fetch(url, { headers: createHeaders() });
-
-        const commits = await handleApiResponse(response, `commits for ${path}`);
-        
-        if (commits?.length > 0) {
-            return formatDate(commits[0].commit.committer.date);
+    return CacheManager.getOrFetch(`commit_${path}`, async () => {
+        try {
+            const url = `${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/commits?path=${encodeURIComponent(path)}&per_page=1`;
+            const response = await fetch(url, { headers: createHeaders() });
+            const commits = await handleApiResponse(response);
+            return commits?.length > 0 ? formatDate(commits[0].commit.committer.date) : null;
+        } catch {
+            return null;
         }
-
-        return null;
-    } catch (error) {
-        return null;
-    }
+    }, CACHE_DURATION);
 }
 
 function sortDirsByDate(dirs: WriteupDir[]): WriteupDir[] {
@@ -123,71 +118,55 @@ function sortDirsByDate(dirs: WriteupDir[]): WriteupDir[] {
 }
 
 export async function fetchAllWriteups(): Promise<WriteupDir[]> {
-    try {
-        const url = `${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/contents`;
-        const response = await fetch(url, { headers: createHeaders() });
+    return CacheManager.getOrFetch('all_writeups', async () => {
+        try {
+            const response = await fetch(`${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/contents`, {
+                headers: createHeaders()
+            });
+            const items = await handleApiResponse(response);
+            if (!items) return [];
 
-        const items = await handleApiResponse(response, 'writeups repository contents');
-        if (!items) return [];
-
-        const dirs = items.filter((item: any) => item.type === 'dir');
-
-        const dirsWithDates = await Promise.all(
-            dirs.map(async (dir: any) => {
-                const lastCommitDate = await fetchCommitDate(dir.path);
-                return {
+            const dirs = items.filter((item: any) => item.type === 'dir');
+            const dirsWithDates = await Promise.all(
+                dirs.map(async (dir: any) => ({
                     name: dir.name,
                     path: dir.path,
                     html_url: dir.html_url,
-                    lastCommitDate
-                };
-            })
-        );
-
-        const sortedDirs = sortDirsByDate(dirsWithDates);
-
-        return sortedDirs;
-    } catch (error) {
-        return [];
-    }
+                    lastCommitDate: await fetchCommitDate(dir.path)
+                }))
+            );
+            return sortDirsByDate(dirsWithDates);
+        } catch {
+            return [];
+        }
+    }, CACHE_DURATION);
 }
 
 export async function fetchWriteupTree(): Promise<TreeNode[]> {
-    const maxRetries = 3;
-    let lastError: Error | null = null;
+    return CacheManager.getOrFetch('writeup_tree', async () => {
+        const maxRetries = 3;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(
+                    `${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/git/trees/main?recursive=1`,
+                    { headers: createHeaders(), signal: controller.signal }
+                );
+                clearTimeout(timeoutId);
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-            const url = `${BASE_API_URL}/repos/${WRITEUPS_OWNER}/${WRITEUPS_REPO}/git/trees/main?recursive=1`;
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            
-            const response = await fetch(url, { 
-                headers: createHeaders(),
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-
-            const data = await handleApiResponse(response, 'writeups tree structure');
-            if (!data?.tree) {
-                throw new Error('Invalid response: missing tree data');
-            }
-
-            return buildTreeStructure(data.tree);
-
-        } catch (error) {
-            lastError = error as Error;
-            
-            if (attempt < maxRetries) {
-                const delay = Math.pow(2, attempt - 1) * 1000;
-                await new Promise(resolve => setTimeout(resolve, delay));
+                const data = await handleApiResponse(response);
+                if (!data?.tree) throw new Error('Invalid response');
+                return buildTreeStructure(data.tree);
+            } catch {
+                if (attempt < maxRetries) {
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt - 1) * 1000));
+                }
             }
         }
-    }
-
-    return [];
+        return [];
+    }, CACHE_DURATION);
 }
 
 function buildTreeStructure(treeData: any[]): TreeNode[] {
@@ -230,4 +209,42 @@ function buildTreeStructure(treeData: any[]): TreeNode[] {
     });
 
     return rootNodes;
+}
+export async function fetchAllWriteupArticles(): Promise<WriteupArticle[]> {
+    return CacheManager.getOrFetch('all_writeup_articles', async () => {
+        const tree = await fetchWriteupTree();
+        const articles: WriteupArticle[] = [];
+
+        function extractArticles(nodes: TreeNode[], rootFolderName: string = '') {
+            nodes.forEach(node => {
+                if (node.type === 'dir' && node.hasReadme && node.children) {
+                    const readme = node.children.find(
+                        child => child.type === 'file' && child.name.toLowerCase() === 'readme.md'
+                    );
+                    
+                    if (readme) {
+                        const title = node.name.replace(/^\d+[\s.-]+/, '');
+                        // Get root folder name (first part of path)
+                        const pathParts = node.path.split('/');
+                        const rootFolder = pathParts[0];
+                        
+                        articles.push({
+                            title,
+                            path: node.path,
+                            folderName: rootFolder
+                        });
+                    }
+                }
+                
+                if (node.type === 'dir' && node.children) {
+                    // Pass down the root folder name, or set it if we're at root level
+                    const nextRootName = rootFolderName || node.name;
+                    extractArticles(node.children, nextRootName);
+                }
+            });
+        }
+
+        extractArticles(tree);
+        return articles;
+    }, CACHE_DURATION);
 }

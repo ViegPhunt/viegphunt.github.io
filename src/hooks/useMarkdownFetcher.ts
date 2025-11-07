@@ -29,10 +29,7 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
     const [githubUrl, setGithubUrl] = useState<string>('');
 
     const convertToRawUrl = useCallback((inputUrl: string): string => {
-        if (inputUrl.includes(BASE_RAW_URL)) {
-            return inputUrl;
-        }
-
+        if (inputUrl.includes(BASE_RAW_URL)) return inputUrl;
         const webMatch = inputUrl.match(/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)/);
         if (webMatch) {
             const [, owner, repoName, branch, filePath] = webMatch;
@@ -110,13 +107,11 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                const decodedContent = new TextDecoder('utf-8').decode(bytes);
-                setContent(decodedContent);
+                setContent(new TextDecoder('utf-8').decode(bytes));
             } else {
                 throw new Error('No content found');
             }
-
-        } catch (err) {
+        } catch {
             setError(true);
             setContent('');
         } finally {
@@ -132,12 +127,10 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
     }, []);
 
     useEffect(() => {
-        if (autoFetch) {
-            if (url || (path && path.trim())) {
-                fetchContent();
-            } else {
-                resetState();
-            }
+        if (autoFetch && (url || (path?.trim()))) {
+            fetchContent();
+        } else if (autoFetch) {
+            resetState();
         }
     }, [autoFetch, fetchContent, resetState, url, path]);
 

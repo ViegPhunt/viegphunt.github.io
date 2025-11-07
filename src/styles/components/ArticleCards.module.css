@@ -1,0 +1,202 @@
+.articlesContainer {
+    margin: 1rem 0;
+}
+
+.noResults {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    user-select: none;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-dark);
+}
+
+.sectionTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--color-text);
+    position: relative;
+}
+
+.resultCount {
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.6;
+    margin-left: 0.5rem;
+}
+
+.viewAllButton {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: 8px;
+    border: 1px solid var(--color-border-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.viewAllButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(237, 224, 212, 0.3);
+}
+
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    padding: 1.25rem 1.25rem 1.5rem 1.5rem;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-dark);
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    gap: 0.8rem;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-border-light);
+    box-shadow: 0 3px 10px rgba(237, 224, 212, 0.3);
+}
+
+.cardTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.cardTag {
+    display: inline-block;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text);
+    background: var(--color-bg-secondary);
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.cardTitle {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.cardDescription {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* Skeleton Loading Styles */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    pointer-events: none;
+    user-select: none;
+}
+
+.skeletonSectionTitle {
+    width: 200px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--color-border-dark) 0%,
+        var(--color-border-light) 50%,
+        var(--color-border-dark) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+.skeletonTags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.skeletonTag {
+    width: 80px;
+    height: 24px;
+    border-radius: 6px;
+    background: linear-gradient(
+        90deg,
+        var(--color-border-dark) 0%,
+        var(--color-border-light) 50%,
+        var(--color-border-dark) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+.skeletonTitle {
+    width: 100%;
+    height: 28px;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    background: linear-gradient(
+        90deg,
+        var(--color-border-dark) 0%,
+        var(--color-border-light) 50%,
+        var(--color-border-dark) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+.skeletonDescription {
+    width: 100%;
+    height: 16px;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    background: linear-gradient(
+        90deg,
+        var(--color-border-dark) 0%,
+        var(--color-border-light) 50%,
+        var(--color-border-dark) 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+.skeletonDescription:last-child {
+    width: 80%;
+}
+
+/* For 1150px wide devices */
+@media (max-width: 1150px) {
+    .card {
+        padding: 1rem;
+    }
+}

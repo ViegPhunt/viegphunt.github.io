@@ -51,15 +51,9 @@ const CodeBlock = ({ children, className, ...props }: any) => {
     React.useEffect(() => {
         const findScrollContainer = () => {
             if (!codeContainerRef.current) return;
-
             const pre = codeContainerRef.current.querySelector('pre');
-            if (pre) {
-                setActualScrollContainer(pre);
-                actualScrollRef.current = pre;
-            } else {
-                setActualScrollContainer(codeContainerRef.current);
-                actualScrollRef.current = codeContainerRef.current;
-            }
+            setActualScrollContainer(pre || codeContainerRef.current);
+            actualScrollRef.current = pre || codeContainerRef.current;
         };
 
         // Delay to ensure DOM is ready before finding scroll container
@@ -98,19 +92,11 @@ const CodeBlock = ({ children, className, ...props }: any) => {
                 <Scrollbar direction="horizontal" containerRef={actualScrollRef} />
             )}
         </div>
-    ) : (
-        <code {...props}>
-            {children}
-        </code>
-    );
+    ) : <code {...props}>{children}</code>;
 };
 
 const createSlug = (text: string) => {
-    return text
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .trim();
+    return text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim();
 };
 
 // Custom heading component that generates IDs for anchor links
@@ -120,47 +106,22 @@ const HeadingComponent = ({ level, children, ...props }: any) => {
     
     const headingProps = { id: slug, ...props };
     
-    switch (level) {
-        case 1:
-            return <h1 {...headingProps}>{children}</h1>;
-        case 2:
-            return <h2 {...headingProps}>{children}</h2>;
-        case 3:
-            return <h3 {...headingProps}>{children}</h3>;
-        case 4:
-            return <h4 {...headingProps}>{children}</h4>;
-        case 5:
-            return <h5 {...headingProps}>{children}</h5>;
-        case 6:
-            return <h6 {...headingProps}>{children}</h6>;
-        default:
-            return <h1 {...headingProps}>{children}</h1>;
-    }
+    const headings = { 1: 'h1', 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5', 6: 'h6' };
+    const Tag = headings[level as keyof typeof headings] || 'h1';
+    return React.createElement(Tag, headingProps, children);
 };
 
-// Scroll to an element with a smooth animation and offset for fixed header
 const scrollToElement = (elementId: string) => {
     const element = document.getElementById(elementId);
     if (!element) return;
-    
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-    const scrollPosition = elementPosition - SCROLL_OFFSET;
-    
-    window.scrollTo({
-        top: Math.max(0, scrollPosition),
-        behavior: 'smooth'
-    });
+    const scrollPosition = element.getBoundingClientRect().top + window.pageYOffset - SCROLL_OFFSET;
+    window.scrollTo({ top: Math.max(0, scrollPosition), behavior: 'smooth' });
 };
 
 // Update URL hash to include repository name and heading ID
 const updateHashWithHeading = (targetId: string) => {
-    const currentHash = window.location.hash.slice(1);
-    const parts = currentHash.split('/');
-    const repoName = parts[0];
-    
-    if (repoName) {
-        window.history.replaceState(null, '', `#${repoName}/${targetId}`);
-    }
+    const repoName = window.location.hash.slice(1).split('/')[0];
+    if (repoName) window.history.replaceState(null, '', `#${repoName}/${targetId}`);
 };
 
 // Main MarkdownRenderer component
@@ -174,10 +135,7 @@ function MarkdownRendererComponent({
 }: MarkdownRendererProps) {
     // Transform relative image URLs to absolute GitHub URLs
     const transformImageUrl = (src: string) => {
-        if (!filePath || !src) return src;
-        if (src.startsWith('http') || src.startsWith('/')) return src;
-
-        // Construct absolute URL from relative path
+        if (!filePath || !src || src.startsWith('http') || src.startsWith('/')) return src;
         const basePath = filePath.substring(0, filePath.lastIndexOf('/'));
         return new URL(`${basePath}/${src}`, 'https://raw.githubusercontent.com/ViegPhunt/CTF-WriteUps/main/').href;
     };
@@ -187,21 +145,14 @@ function MarkdownRendererComponent({
         return <div className={styles.welcome}><h2>{welcomeMessage}</h2></div>;
     }
 
-    // Show loading state
-    if (loading) {
-        return <div className={styles.loading}>Loading content...</div>;
-    }
+    if (loading) return <div className={styles.loading}>Loading content...</div>;
 
     // Show error state with link to GitHub
     if (error) {
         return (
             <div className={styles.error}>
                 <h1>Failed to Load Content</h1>
-                {githubUrl && (
-                    <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-                        View on GitHub
-                    </a>
-                )}
+                {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer">View on GitHub</a>}
             </div>
         );
     }
@@ -244,35 +195,13 @@ function MarkdownRendererComponent({
                                 updateHashWithHeading(targetId);
                                 scrollToElement(targetId);
                             };
-                            
-                            return (
-                                <a href={href} onClick={handleAnchorClick} {...props}>
-                                    {children}
-                                </a>
-                            );
+                            return <a href={href} onClick={handleAnchorClick} {...props}>{children}</a>;
                         }
                         
-                        const isInternalLink = href?.startsWith('/') || 
-                                                (!href?.startsWith('http') && !href?.startsWith('mailto:'));
+                        const isInternalLink = href?.startsWith('/') || (!href?.startsWith('http') && !href?.startsWith('mailto:'));
+                        if (isInternalLink) return <a href={href} {...props}>{children}</a>;
                         
-                        if (isInternalLink) {
-                            return (
-                                <a href={href} {...props}>
-                                    {children}
-                                </a>
-                            );
-                        }
-                        
-                        return (
-                            <a 
-                                href={href} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                {...props}
-                            >
-                                {children}
-                            </a>
-                        );
+                        return <a href={href} target="_blank" rel="noopener noreferrer" {...props}>{children}</a>;
                     },
                     img: ({ src, alt, ...props }) => {
                         const imageUrl = transformImageUrl(typeof src === 'string' ? src : '');
@@ -288,9 +217,7 @@ function MarkdownRendererComponent({
                             />
                         );
                     },
-                    table: ({ children }) => (
-                        <table className={styles.table}>{children}</table>
-                    ),
+                    table: ({ children }) => <table className={styles.table}>{children}</table>,
                     blockquote({ children, ...props }) {
                         const childArray = Children.toArray(children);
 
@@ -309,13 +236,7 @@ function MarkdownRendererComponent({
                             .find((txt) => txt.length > 0) || '';
 
                         const match = firstText.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
-                        if (!match) {
-                            return (
-                                <blockquote className={styles.blockquote} {...props}>
-                                    {children}
-                                </blockquote>
-                            );
-                        }
+                        if (!match) return <blockquote className={styles.blockquote} {...props}>{children}</blockquote>;
 
                         const alertType = match[1].toUpperCase();
 

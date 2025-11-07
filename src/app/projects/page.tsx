@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatedBox } from '@/components/ChangePage';
-import { GitHubRepo, formatDate } from '@/lib/github-api';
-import { getRepositories } from '@/lib/static-loader';
+import { GitHubRepo, formatDate, fetchAllRepositories } from '@/lib/github-api';
 import { useMarkdownFetcher } from '@/hooks/useMarkdownFetcher';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import styles from "@/styles/pages/projects.module.css";
@@ -34,13 +33,8 @@ export default function Projects() {
         setTimeout(() => {
             const element = document.getElementById(elementId);
             if (element) {
-                const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-                const scrollPosition = elementPosition - SCROLL_OFFSET;
-                
-                window.scrollTo({
-                    top: Math.max(0, scrollPosition),
-                    behavior: 'smooth'
-                });
+                const scrollPosition = element.getBoundingClientRect().top + window.pageYOffset - SCROLL_OFFSET;
+                window.scrollTo({ top: Math.max(0, scrollPosition), behavior: 'smooth' });
             }
         }, delay);
     }, []);
@@ -53,16 +47,10 @@ export default function Projects() {
             try {
                 setLoading(true);
                 setError(null);
-
-                const repositories = await getRepositories();
-
-                if (mounted) {
-                    setRepos(repositories);
-                }
+                const repositories = await fetchAllRepositories();
+                if (mounted) setRepos(repositories);
             } catch (err: any) {
-                if (mounted) {
-                    setError(err.message || 'Failed to load projects');
-                }
+                if (mounted) setError(err.message || 'Failed to load projects');
             } finally {
                 if (mounted) setLoading(false);
             }
@@ -82,9 +70,7 @@ export default function Projects() {
                 return;
             }
 
-            const decodedHash = decodeURIComponent(hash);
-            const [repoName, headingId] = decodedHash.split('/');
-            
+            const [repoName, headingId] = decodeURIComponent(hash).split('/');
             const repo = repos.find(r => r.name === repoName);
             if (!repo) return;
 
@@ -123,11 +109,7 @@ export default function Projects() {
 
     const renderProjects = () => {
         if (error || (repos.length === 0 && !loading)) {
-            return (
-                <div className='error'>
-                    Failed to load projects. Please try again later.
-                </div>
-            );
+            return <div className='error'>Failed to load projects. Please try again later.</div>;
         }
 
         return (
