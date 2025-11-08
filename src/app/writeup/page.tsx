@@ -186,39 +186,37 @@ export default function CTFWriteUp() {
         }
     }, [isMobile, isMenuOpen]);
 
-    // Navigate to a node (handles both README and folder display)
-    const navigateToNode = useCallback((node: TreeNode, shouldToggle: boolean = false) => {
+    // Handle folder click in tree view
+    const handleFolderClick = useCallback((node: TreeNode, shouldToggle: boolean = true) => {
         if (node.hasReadme) {
             // Folder with README - show README
             setSelectedReadme(`${node.path}/README.md`);
             setSelectedFolder(null);
-            const expandedParents = getExpandedParents(node.path);
-            setExpandedFolders(expandedParents);
+            updateUrlHash(node.path);
         } else {
-            // Regular folder
+            // Regular folder - toggle expansion or set as selected
             if (shouldToggle) {
                 toggleFolder(node.path);
             } else {
                 const expandedParents = getExpandedParents(node.path);
                 expandedParents.add(node.path);
                 setExpandedFolders(expandedParents);
-                setSelectedFolder(node);
-                setSelectedReadme(null);
             }
-        }
-        updateUrlHash(node.path);
-        closeMenuIfMobile();
-    }, [toggleFolder, updateUrlHash, closeMenuIfMobile]);
 
-    // Handle folder click in tree view
-    const handleFolderClick = useCallback((node: TreeNode, shouldToggle: boolean = true) => {
-        navigateToNode(node, shouldToggle);
-    }, [navigateToNode]);
+            setSelectedFolder(node);
+            setSelectedReadme(null);
+            updateUrlHash(node.path);
+            closeMenuIfMobile();
+        }
+    }, [toggleFolder, updateUrlHash, closeMenuIfMobile]);
 
     // Handle page (README) click in folder contents view
     const handlePageClick = useCallback((node: TreeNode) => {
-        navigateToNode(node, false);
-    }, [navigateToNode]);
+        setSelectedReadme(`${node.path}/README.md`);
+        setSelectedFolder(null);
+        updateUrlHash(node.path);
+        closeMenuIfMobile();
+    }, [updateUrlHash, closeMenuIfMobile]);
 
     //  Build breadcrumb navigation from folder path
     const buildBreadcrumbs = useCallback((folder: TreeNode) => {
@@ -286,13 +284,13 @@ export default function CTFWriteUp() {
             hasReadme: true,
             children: []
         };
-        navigateToNode(articleNode, false);
-    }, [navigateToNode]);
+        handlePageClick(articleNode);
+    }, [handlePageClick]);
     
     // Handle folder click from search results
     const handleSearchFolderClick = useCallback((folder: TreeNode) => {
-        navigateToNode(folder, false);
-    }, [navigateToNode]);
+        handleFolderClick(folder, false);
+    }, [handleFolderClick]);
 
     // Render search result item
     const renderSearchResultItem = (

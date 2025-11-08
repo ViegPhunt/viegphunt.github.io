@@ -1,3 +1,15 @@
+/* Animation for folder items */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .twoColumnLayout {
     width: 100%;
     max-width: 1350px;
@@ -234,7 +246,18 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    animation: fadeInUp 0.5s ease-out backwards;
 }
+
+.folderItem:nth-child(1) { animation-delay: 0.05s; }
+.folderItem:nth-child(2) { animation-delay: 0.1s; }
+.folderItem:nth-child(3) { animation-delay: 0.15s; }
+.folderItem:nth-child(4) { animation-delay: 0.2s; }
+.folderItem:nth-child(5) { animation-delay: 0.25s; }
+.folderItem:nth-child(n+6) { animation-delay: 0.3s; }
+.folderItem:nth-child(7) { animation-delay: 0.35s; }
+.folderItem:nth-child(8) { animation-delay: 0.4s; }
+.folderItem:nth-child(n+9) { animation-delay: 0.45s; }
 
 .folderItem:hover {
     border-color: var(--color-text);
@@ -378,12 +401,17 @@
     }
 
     .folderContents {
-        padding: 1.5rem 1rem;
+        padding: 0;
+        padding-top: 1.5rem;
     }
 
     .breadcrumbs {
         font-size: 1.3rem;
         font-weight: 500;
+    }
+
+    .breadcrumbSeparator {
+        margin: 0;
     }
 
     .folderItemName {
