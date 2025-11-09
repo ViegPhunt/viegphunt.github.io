@@ -8,6 +8,7 @@
     margin-bottom: 3rem;
     display: flex;
     align-items: center;
+    text-align: justify;
     gap: 3rem;
 }
 
@@ -28,7 +29,6 @@
 .pageHeadingContent {
     width: 100%;
     flex: 1;
-    text-align: justify;
 }
 
 .homeTitle {
@@ -85,3 +85,4 @@
     }
 
 }
+
