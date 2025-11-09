@@ -28,6 +28,7 @@
 .pageHeadingContent {
     width: 100%;
     flex: 1;
+    text-align: justify;
 }
 
 .homeTitle {
@@ -82,4 +83,5 @@
     .homeDescription {
         font-size: 1rem;
     }
+
 }
