@@ -19,7 +19,6 @@
 
 /* Language Toggle */
 .languageToggle {
-    margin-right: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -91,6 +90,7 @@
     font-size: 1.3rem;
     line-height: 1.9;
     color: var(--color-text);
+    text-align: justify;
 }
 
 .highlight {
