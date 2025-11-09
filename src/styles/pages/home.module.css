@@ -6,10 +6,28 @@
 
 .pageHeading {
     margin-bottom: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+}
+
+.avatar {
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.avatar img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-border-dark);
+    box-shadow: 0 0 10px var(--color-shadow-dark);
 }
 
 .pageHeadingContent {
     width: 100%;
+    flex: 1;
 }
 
 .homeTitle {
@@ -41,5 +59,27 @@
     .homeDescription {
         font-size: 1.1rem;
         line-height: 1.7;
+    }
+}
+
+/* For 1150px wide devices */
+@media (max-width: 1150px) {
+    .pageHeading {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .avatar img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .homeTitle {
+        font-size: 1.8rem;
+    }
+
+    .homeDescription {
+        font-size: 1rem;
     }
 }

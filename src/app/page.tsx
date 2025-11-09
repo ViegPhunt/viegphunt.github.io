@@ -13,10 +13,13 @@ export default function HomePage() {
         <AnimatedBox delay={100}>
             <div className={`container ${styles.homeContainer}`}>
                 <div className={styles.pageHeading}>
+                    <div className={styles.avatar}>
+                        <img src="/avatar.jpg" alt="Avatar" />
+                    </div>
                     <div className={styles.pageHeadingContent}>
                         <h1 className={styles.homeTitle}>Welcome to my personal website!</h1>
                         <p className={styles.homeDescription}>
-                            A collection of projects, CTF write-ups, and technology notes I’ve gathered through my learning process.
+                            A collection of projects, CTF write-ups, and technology notes I've gathered through my learning process.
                         </p>
                     </div>
                 </div>
