@@ -39,19 +39,10 @@ const BASE_API_URL = 'https://api.github.com';
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
 const createHeaders = (): Record<string, string> => {
-    const headers: Record<string, string> = {
+    return {
         'Accept': 'application/vnd.github+json',
         'User-Agent': 'ViegPhunt'
     };
-
-    if (typeof window === 'undefined') {
-        const token = process.env.GITHUB_TOKEN;
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-    }
-
-    return headers;
 };
 
 const handleApiResponse = async (response: Response) => {

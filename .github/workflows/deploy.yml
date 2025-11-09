@@ -37,7 +37,6 @@ jobs:
     - name: Build application
       run: npm run build
       env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
         NODE_ENV: production
 
     - name: Setup Pages

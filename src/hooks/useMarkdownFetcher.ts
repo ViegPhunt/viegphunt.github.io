@@ -89,10 +89,6 @@ export function useMarkdownFetcher(options: UseMarkdownFetcherOptions): UseMarkd
                 'User-Agent': 'ViegPhunt'
             };
 
-            if (typeof window === 'undefined' && process.env.GITHUB_TOKEN) {
-                headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
-            }
-
             const response = await fetch(apiUrl, { headers });
 
             if (!response.ok) {
