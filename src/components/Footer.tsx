@@ -5,7 +5,7 @@ export default function Footer() {
         <footer className={styles.siteFooter}>
             <div className={styles.footerContainer}>
                 <div className={styles.footerDesc}>
-                    © 2025 <strong>ViegPhunt</strong>.
+                    © 2025 <strong>ViegPhunt</strong> • All creativity reserved.
                 </div>
                 <div className={styles.socialLinks}>
                     <a href="mailto:phungquocvietattt@gmail.com" target="_blank" className={styles.socialIcon}>
@@ -34,3 +34,4 @@ export default function Footer() {
     );
 
 }
+
