@@ -85,7 +85,7 @@ export default function About() {
                             {data.about.achievements.map((achievement, index) => (
                                 <div key={index} className={styles.infoItem}>
                                     <p className={styles.infoAchievement}>
-                                        {achievement[language]} - {achievement.year}
+                                        {achievement[language]} {achievement.year}
                                     </p>
                                 </div>
                             ))}
@@ -120,3 +120,4 @@ export default function About() {
         </AnimatedBox>
     );
 }
+
