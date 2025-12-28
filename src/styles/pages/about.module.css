@@ -17,6 +17,13 @@
     color: var(--color-text);
 }
 
+.pageHeading2Content {
+    margin: 1rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
 /* Language Toggle */
 .languageToggle {
     display: flex;
@@ -103,45 +110,45 @@
 }
 
 /* Contact Style */
-.aboutContact {
-    margin: 60px 0 2rem;
+.aboutInfo {
+    margin: 60px 0 3rem;
     width: 100%;
 }
 
-.contactList {
+.infoList {
     width: 100%;
     font-size: 1.2rem;
     color: var(--color-text);
 }
 
-.contactItem {
+.infoItem {
     margin-bottom: 1.25rem;
     display: flex;
     gap: 0.75rem;
     align-items: center;
 }
 
-.contactItem::before {
+.infoItem::before {
     content: '•';
     font-size: 1.5rem;
     color: var(--color-text);
 }
 
-.contactItem p {
+.infoItem p {
     font-weight: 700;
     color: var(--color-text);
 }
 
-.contactLink {
+.infoLink {
     position: relative;
 }
 
-.contactLink a {
+.infoLink a {
     color: var(--color-text);
     text-decoration: none;
 }
 
-.contactLink::after {
+.infoLink::after {
     content: '';
     position: absolute;
     width: 0;
@@ -152,7 +159,7 @@
     transition: width 0.2s ease;
 }
 
-.contactLink:hover::after {
+.infoLink:hover::after {
     width: 100%;
 }
 
@@ -166,6 +173,10 @@
         font-size: 2.25rem;
     }
 
+    .pageHeading2Content {
+        font-size: 1.75rem;
+    }
+
     .toggleButton:hover {
         box-shadow: none;
     }
@@ -174,11 +185,11 @@
         font-size: 1.1rem;
     }
 
-    .contactList {
+    .infoList {
         font-size: 1.1rem;
     }
 
-    .contactLink::after {
+    .infoLink::after {
         width: 100%;
     }
 }

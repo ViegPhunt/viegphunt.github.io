@@ -1,4 +1,4 @@
-import projectsConfig from "../../projects.json";
+import dataConfig from "../../data.json";
 import { CacheManager } from "./cache";
 
 export type GitHubRepo = {
@@ -75,7 +75,7 @@ async function fetchRepository(repoName: string): Promise<GitHubRepo | null> {
 
 export async function fetchAllRepositories(): Promise<GitHubRepo[]> {
     return CacheManager.getOrFetch('all_repositories', async () => {
-        const results = await Promise.all(projectsConfig.repositories.map(fetchRepository));
+        const results = await Promise.all(dataConfig.projects.map(fetchRepository));
         return results.filter((repo): repo is GitHubRepo => repo !== null);
     }, CACHE_DURATION);
 }

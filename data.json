@@ -1,0 +1,47 @@
+{
+    "projects": [
+        "ViegPhunt/Arch-Hyprland",
+        "ViegPhunt/auto-setup-LT"
+    ],
+    "about": {
+        "achievements": [
+            {
+                "english": "Top 4 - DENSO Factory Hackathon",
+                "vietnamese": "Top 4 - DENSO Factory Hackathon",
+                "year": 2025
+            },
+            {
+                "english": "Second Prize - PTITCTF",
+                "vietnamese": "Giải nhì - PTITCTF",
+                "year": 2025
+            },
+            {
+                "english": "Consolation Prize - PTITCTF",
+                "vietnamese": "Giải nhì - PTITCTF",
+                "year": 2024
+            }
+        ],
+        "contacts": [
+            {
+                "platform": "Email",
+                "url": "mailto:phungquocvietattt@gmail.com",
+                "display": "phungquocvietattt@gmail.com"
+            },
+            {
+                "platform": "Github",
+                "url": "https://github.com/ViegPhunt",
+                "display": "github.com/ViegPhunt"
+            },
+            {
+                "platform": "Telegram",
+                "url": "https://t.me/viegphunt",
+                "display": "t.me/viegphunt"
+            },
+            {
+                "platform": "Facebook",
+                "url": "https://www.facebook.com/phung.viet.68",
+                "display": "facebook.com/phung.viet.68"
+            }
+        ]
+    }
+}

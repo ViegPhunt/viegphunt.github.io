@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatedBox } from '@/components/ChangePage';
 import styles from "@/styles/pages/about.module.css";
+import data from "../../../data.json";
 
 // Content for the About page in both English and Vietnamese
 const content = {
@@ -76,45 +77,40 @@ export default function About() {
                 <div className="divider"></div>
 
                 <AnimatedBox delay={150}>
-                    <div className={styles.aboutContact}>
-                        <h1 className={styles.pageHeadingContent}>
-                            Contact
+                    <div className={styles.aboutInfo}>
+                        <h1 className={styles.pageHeading2Content}>
+                            Achievements
                         </h1>
-                        <div className={styles.contactList}>
-                            <div className={styles.contactItem}>
-                                <p>Email:</p>
-                                <div className={styles.contactLink}>
-                                    <a href="mailto:phungquocvietattt@gmail.com" target="_blank" rel="noopener noreferrer">
-                                        phungquocvietattt@gmail.com
-                                    </a>
+                        <div className={styles.infoList}>
+                            {data.about.achievements.map((achievement, index) => (
+                                <div key={index} className={styles.infoItem}>
+                                    {achievement[language]} - {achievement.year}
                                 </div>
-                            </div>
-                            <div className={styles.contactItem}>
-                                <p>Github:</p>
-                                <div className={styles.contactLink}>
-                                    <a href="https://github.com/ViegPhunt" target="_blank" rel="noopener noreferrer">
-                                        github.com/ViegPhunt
-                                    </a>
-                                </div>
-                            </div>
-                            <div className={styles.contactItem}>
-                                <p>Telegram:</p>
-                                <div className={styles.contactLink}>
-                                    <a href="https://t.me/viegphunt" target="_blank" rel="noopener noreferrer">
-                                        t.me/viegphunt
-                                    </a>
-                                </div>
-                            </div>
-                            <div className={styles.contactItem}>
-                                <p>Facebook:</p>
-                                <div className={styles.contactLink}>
-                                    <a href="https://www.facebook.com/phung.viet.68/" target="_blank" rel="noopener noreferrer">
-                                        facebook.com/phung.viet.68
-                                    </a>
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                    </div>                   
+                    </div>
+                </AnimatedBox>
+
+                <div className="divider"></div>
+
+                <AnimatedBox delay={150}>
+                    <div className={styles.aboutInfo}>
+                        <h1 className={styles.pageHeading2Content}>
+                            Contacts
+                        </h1>
+                        <div className={styles.infoList}>
+                            {data.about.contacts.map((contact, index) => (
+                                <div key={index} className={styles.infoItem}>
+                                    <p>{contact.platform}:</p>
+                                    <div className={styles.infoLink}>
+                                        <a href={contact.url} target="_blank" rel="noopener noreferrer">
+                                            {contact.display}
+                                        </a>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </AnimatedBox>
             </div>
         </AnimatedBox>
