@@ -84,7 +84,9 @@ export default function About() {
                         <div className={styles.infoList}>
                             {data.about.achievements.map((achievement, index) => (
                                 <div key={index} className={styles.infoItem}>
-                                    {achievement[language]} - {achievement.year}
+                                    <p className={styles.infoAchievement}>
+                                        {achievement[language]} - {achievement.year}
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -101,7 +103,9 @@ export default function About() {
                         <div className={styles.infoList}>
                             {data.about.contacts.map((contact, index) => (
                                 <div key={index} className={styles.infoItem}>
-                                    <p>{contact.platform}:</p>
+                                    <p className={styles.infoPlatform}>
+                                        {contact.platform}:
+                                    </p>
                                     <div className={styles.infoLink}>
                                         <a href={contact.url} target="_blank" rel="noopener noreferrer">
                                             {contact.display}
