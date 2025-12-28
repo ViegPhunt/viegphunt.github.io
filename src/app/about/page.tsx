@@ -95,7 +95,7 @@ export default function About() {
 
                 <div className="divider"></div>
 
-                <AnimatedBox delay={150}>
+                <AnimatedBox delay={300}>
                     <div className={styles.aboutInfo}>
                         <h1 className={styles.pageHeading2Content}>
                             Contacts
@@ -120,4 +120,5 @@ export default function About() {
         </AnimatedBox>
     );
 }
+
 
