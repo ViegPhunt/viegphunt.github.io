@@ -4,7 +4,7 @@
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 ```
 src/
 	app/
@@ -18,23 +18,23 @@ src/
 	lib/                # Utility modules (e.g. GitHub API, static loader)
 	styles/             # Global + modular styles
 public/               # Static assets (favicons, images)
-projects.json         # Projects data source
+data.json         # Projects data source
 ```
 
-## 🚀 Scripts
+## Scripts
 ```bash
 npm install			# Install dependencies
 npm run dev			# Start dev server (http://localhost:3000)
 npm run build		# Production build (generates .next)
 ```
 
-## 📤 Deployment (GitHub Pages)
+## Deployment (GitHub Pages)
 - This repository uses a GitHub Actions workflow: `.github/workflows/deploy.yml`.
 - Ensure in repository Settings → Pages → Source = GitHub Actions.
 
-## ✍ Adding Content
+## Adding Content
 ### Add a Project
-Edit `projects.json` and follow existing object structure.
+Edit `data.json` and follow existing object structure.
 
 ### Add a Write-up
 Extend the page in `app/writeup/page.tsx` to map local files or remote sources.
