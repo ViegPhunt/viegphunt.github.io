@@ -18,7 +18,7 @@ src/
 	lib/                # Utility modules (e.g. GitHub API, static loader)
 	styles/             # Global + modular styles
 public/               # Static assets (favicons, images)
-data.json         # Projects data source
+data.json         # Data source
 ```
 
 ## Scripts
@@ -33,7 +33,7 @@ npm run build		# Production build (generates .next)
 - Ensure in repository Settings → Pages → Source = GitHub Actions.
 
 ## Adding Content
-### Add a Project
+### Add a Project, Achievements, Contact
 Edit `data.json` and follow existing object structure.
 
 ### Add a Write-up
