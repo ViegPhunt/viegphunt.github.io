@@ -8,17 +8,17 @@
 ```
 src/
 	app/
-		layout.tsx        # Root layout
-		page.tsx          # Home page
-		about/            # About page
-		projects/         # Projects listing
-		writeup/          # Write-ups (Markdown based)
-	components/         # Reusable UI pieces
+		layout.tsx			# Root layout
+		page.tsx			# Home page
+		about/				# About page
+		projects/			# Projects listing
+		writeup/			# Write-ups (Markdown based)
+	components/			# Reusable UI pieces
 	hooks/              # Custom React hooks
 	lib/                # Utility modules (e.g. GitHub API, static loader)
 	styles/             # Global + modular styles
-public/               # Static assets (favicons, images)
-data.json         # Data source
+public/				# Static assets (favicons, images)
+data.json         	# Data source
 ```
 
 ## Scripts
@@ -33,7 +33,7 @@ npm run build		# Production build (generates .next)
 - Ensure in repository Settings → Pages → Source = GitHub Actions.
 
 ## Adding Content
-### Add a Project, Achievements, Contact
+### Add Projects, Achievements, Contacts
 Edit `data.json` and follow existing object structure.
 
 ### Add a Write-up
