@@ -1,0 +1,183 @@
+---
+import ListLayout from "@/layouts/ListLayout.astro";
+import data from "@/../data.json";
+
+// Content for the About page in both English and Vietnamese
+const content = {
+	english: {
+		paragraphs: [
+			"Hi, I'm **Viet**, but you can also call me **Pham**. I'm currently a student majoring in **Information Security** at the Posts and Telecommunications Institute of Technology (PTIT).",
+			"I have a great passion for **technology** and a deep interest in the field of **information security**, which led me to participate in **CTF competitions**. This website was created out of that passion, I wanted it to be a dedicated space for showcasing my **personal projects** and, at the same time, a repository for my **CTF write-ups**.",
+			"Beyond studying and taking part in CTF challenges, I also enjoy personalizing my working environment. From customizing my Linux desktop setup to tweaking Windows, I like turning my computer into a space that feels both aesthetically pleasing and comfortable for learning and working.",
+		],
+	},
+	vietnamese: {
+		paragraphs: [
+			"Xin chào, mình là **Việt**, nhưng bạn cũng có thể gọi mình là **Phàm**. Hiện tại mình đang là sinh viên ngành **An toàn thông tin** tại Học viện Công nghệ Bưu chính Viễn thông (PTIT).",
+			"Mình là một người đặc biệt yêu thích **công nghệ** và quan tâm nhiều đến lĩnh vực **an toàn thông tin**, điều này đã dẫn dắt mình đến với các **cuộc thi CTF**. Trang web này ra đời cũng chính từ sở thích đó, mình mong muốn nơi này như một không gian để chia sẻ những **project cá nhân** đồng thời để lưu lại những bài **write-up CTF** của mình.",
+			"Ngoài việc học và tham gia các giải CTF, mình còn có sở thích cá nhân hoá môi trường làm việc của mình, từ việc tuỳ chỉnh giao diện desktop trên Linux cho đến Windows, tất cả đều nhằm biến chiếc máy tính thành một không gian đẹp mắt và thoải mái hơn trong quá trình học tập và làm việc.",
+		],
+	},
+};
+
+// Function to parse **text** into highlighted spans
+function parseHighlight(text: string) {
+	const parts = text.split(/(\*\*[^*]+\*\*)/g);
+	return parts.map((part) => {
+		if (part.startsWith("**") && part.endsWith("**")) {
+			return `<span class="text-[1.3rem] font-bold text-text hover:[text-shadow:0_0_5px_var(--color-shadow)] transition-all">${part.slice(2, -2)}</span>`;
+		}
+		return part;
+	}).join("");
+}
+---
+
+<ListLayout title="About | ViegPhunt">
+	<div class="w-full max-w-[950px] mx-auto">
+		<div class="w-full flex justify-between items-center">
+			<h1 class="my-8 text-[3rem] font-bold text-text">About Me</h1>
+			<div class="flex pt-[6px] items-center gap-4">
+				<span
+					class="font-semibold cursor-pointer select-none transition-opacity duration-300"
+					id="lang-en"
+				>
+					EN
+				</span>
+				<button class="relative w-[46px] h-[26px] bg-background border-2 border-border rounded-full cursor-pointer flex items-center" id="languageToggle">
+					<span id="language-toggle-slider" class="absolute left-[2px] h-[18px] w-[18px] bg-text rounded-full transition-transform duration-300 ease-in-out"></span>
+				</button>
+				<span
+					class="font-semibold cursor-pointer select-none transition-opacity duration-300"
+					id="lang-vn"
+				>
+					VN
+				</span>
+			</div>
+		</div>
+
+		<div class="mb-[50px] leading-[1.9]">
+			<div class="block">
+				{
+					content.english.paragraphs.map((paragraph) => (
+						<p
+							class="mb-7 text-[1.3rem] leading-[1.9] text-text text-justify content-english"
+							set:html={parseHighlight(paragraph)}
+						/>
+					))
+				}
+				{
+					content.vietnamese.paragraphs.map((paragraph) => (
+						<p
+							class="mb-7 text-[1.3rem] leading-[1.9] text-text text-justify content-vietnamese hidden"
+							set:html={parseHighlight(paragraph)}
+						/>
+					))
+				}
+			</div>
+		</div>
+
+		<div class="h-px w-full bg-border"></div>
+
+		<div class="my-[50px] mb-12 w-full">
+			<h1 class="my-4 text-[2rem] font-bold text-text">Achievements</h1>
+			<div class="w-full text-text">
+				{
+					data.about.achievements.map((achievement) => (
+						<div class="mb-5 flex gap-3 items-start before:content-['•'] before:text-[1.5rem] before:text-text before:leading-[1.5rem] before:mt-[2px]">
+							<p
+								class="font-medium text-[1.2rem] text-text flex-1 achievement-english"
+							>
+								{achievement.english} {achievement.year}
+							</p>
+							<p
+								class="font-medium text-[1.2rem] text-text flex-1 achievement-vietnamese hidden"
+							>
+								{achievement.vietnamese} {achievement.year}
+							</p>
+						</div>
+					))
+				}
+			</div>
+		</div>
+
+		<div class="h-px w-full bg-border"></div>
+
+		<div class="my-[50px] mb-12 w-full">
+			<h1 class="my-4 text-[2rem] font-bold text-text">Contacts</h1>
+			<div class="w-full text-text">
+				{
+					data.about.contacts.map((contact) => (
+						<div class="mb-5 flex gap-3 items-start before:content-['•'] before:text-[1.5rem] before:text-text before:leading-[1.5rem] before:mt-[2px]">
+							<p class="font-bold text-[1.2rem] text-text">
+								{contact.platform}:
+							</p>
+							<div class="relative group">
+								<a
+									href={contact.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="text-text text-[1.2rem] no-underline animated-underline"
+								> {contact.display}
+								</a>
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Language toggle functionality
+		let currentLanguage: "english" | "vietnamese" = "english";
+
+		const toggleButton = document.getElementById("languageToggle") as HTMLButtonElement;
+		const toggleSlider = document.getElementById("language-toggle-slider") as HTMLButtonElement;
+		const langEn = document.getElementById("lang-en") as HTMLElement;
+		const langVn = document.getElementById("lang-vn") as HTMLElement;
+
+		function updateLanguage(lang: "english" | "vietnamese") {
+			currentLanguage = lang;
+
+			const allEnglishContent = document.querySelectorAll<HTMLElement>(".content-english, .achievement-english");
+			const allVietnameseContent = document.querySelectorAll<HTMLElement>(".content-vietnamese, .achievement-vietnamese");
+
+			if (lang === "english") {
+				// Update toggle button state
+				toggleSlider.classList.remove("translate-x-5");
+				// Update language option states
+				langEn.classList.add("opacity-100");
+				langEn.classList.remove("opacity-30");
+				langVn.classList.add("opacity-30");
+				langVn.classList.remove("opacity-100");
+				// Toggle content visibility
+				allEnglishContent.forEach((el) => el.classList.remove("hidden"));
+				allVietnameseContent.forEach((el) => el.classList.add("hidden"));
+			} else {
+				// Update toggle button state
+				toggleSlider.classList.add("translate-x-5");
+				// Update language option states
+				langVn.classList.add("opacity-100");
+				langVn.classList.remove("opacity-30");
+				langEn.classList.add("opacity-30");
+				langEn.classList.remove("opacity-100");
+				// Toggle content visibility
+				allEnglishContent.forEach((el) => el.classList.add("hidden"));
+				allVietnameseContent.forEach((el) => el.classList.remove("hidden"));
+			}
+		}
+
+		// Initialize with English
+		updateLanguage("english");
+
+		// Toggle button click handler
+		toggleButton.addEventListener("click", () => {
+			const newLang = currentLanguage === "english" ? "vietnamese" : "english";
+			updateLanguage(newLang);
+		});
+
+        // Also allow clicking on the language text
+        langEn.addEventListener("click", () => updateLanguage("english"));
+        langVn.addEventListener("click", () => updateLanguage("vietnamese"));
+	</script>
+</ListLayout>

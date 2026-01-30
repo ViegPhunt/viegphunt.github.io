@@ -1,0 +1,30 @@
+---
+import SearchBox from './SearchBox.astro';
+---
+
+<div class="my-12">
+	<div class="mb-5">
+		<div class="text-2xl font-bold">Search Articles</div>
+	</div>
+	<form class="w-full" id="searchForm">
+		<SearchBox 
+			id="search"
+			placeholder="Search by title, description or tags..."
+			onSearch="search-query-changed"
+		/>
+	</form>
+</div>
+
+<script>
+	function initSearchForm() {
+		const searchForm = document.getElementById("searchForm");
+		if (!searchForm) return;
+
+		searchForm.addEventListener("submit", (e) => {
+			e.preventDefault();
+		});
+	}
+
+	initSearchForm();
+	document.addEventListener("astro:page-load", initSearchForm);
+</script>

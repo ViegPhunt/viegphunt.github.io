@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import ListLayout from '@/layouts/ListLayout.astro';
+import Image from '@/components/OptimizedImage.astro';
+
+const allProjects = await getCollection('projects');
+
+const projectsData = allProjects.map((p) => ({
+    name: p.data.title,
+    slug: p.slug,
+    description: p.data.description,
+    topics: p.data.topics ? p.data.topics.split(", ") : [],
+    banner: p.data.banner,
+    updated: p.data.updated,
+    link: `/projects/${p.slug}`,
+})).sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime());
+---
+
+<ListLayout title="Projects | ViegPhunt">
+	<div class="w-full mt-[32px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 gap-y-12 lg:gap-y-16">
+		{projectsData.map((item) => (
+			<a
+				href={item.link}
+				class="group bg-background text-text no-underline flex flex-col overflow-hidden"
+			>
+				{item.banner && (
+					<div class="aspect-video w-full overflow-hidden bg-tag rounded-md">
+						<Image 
+							src={item.banner} 
+							alt={item.name}
+							width={640}
+							height={360}
+							class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+						/>
+					</div>
+				)}
+				<div class="pt-5 flex flex-col gap-2 flex-grow">
+					<h3 class="text-[1.3rem] font-bold m-0 leading-[1.4]">{item.name}</h3>
+					<p class="text-[1rem] opacity-70 leading-[1.6] m-0 flex-grow">{item.description}</p>
+					<div class="flex gap-5 mt-2 text-sm opacity-60">
+						{item.updated && (
+							<div class="flex gap-2">
+								<i class="fa-regular fa-calendar"></i>
+								<span>{new Date(item.updated).toLocaleDateString('en-GB')}</span>
+							</div>
+						)}
+						<div class="flex gap-2">
+							<i class="fa-solid fa-hashtag"></i>
+							<span>
+								{item.topics.slice(0, 3).map((tag, index) => (
+									<>
+										{tag}{index < Math.min(item.topics.length, 3) - 1 ? ' - ' : ''}
+									</>
+								))}
+							</span>
+						</div>
+					</div>
+				</div>
+			</a>
+		))}
+	</div>
+</ListLayout>

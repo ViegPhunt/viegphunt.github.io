@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+	src: ImageMetadata | string;
+	alt: string;
+	width?: number;
+	height?: number;
+	class?: string;
+	loading?: 'lazy' | 'eager';
+}
+
+const { 
+	src, 
+	alt, 
+	width = 800, 
+	height = 450, 
+	class: className = '',
+	loading = 'lazy'
+} = Astro.props;
+
+// Check if src is a string (remote URL)
+const isString = typeof src === 'string';
+const isRemote = isString && (src.startsWith('http://') || src.startsWith('https://'));
+---
+
+{isRemote ? (
+	<!-- For remote images, use regular img tag -->
+	<img 
+		src={src as string}
+		alt={alt}
+		width={width}
+		height={height}
+		loading={loading}
+		class={className}
+		decoding="async"
+	/>
+) : (
+	<!-- For local images, use Astro's Image component for WebP optimization -->
+	<Image 
+		src={src as any}
+		alt={alt}
+		width={width}
+		height={height}
+		loading={loading}
+		class={className}
+		format="webp"
+		quality={85}
+	/>
+)}

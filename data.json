@@ -1,0 +1,70 @@
+{
+    "seo": {
+        "siteName": "ViegPhunt",
+        "author": {
+            "name": "ViegPhunt",
+            "twitter": "@viegphunt"
+        },
+        "publisher": {
+            "name": "ViegPhunt",
+            "logo": "/logo.png"
+        },
+        "defaultTitle": "ViegPhunt",
+        "defaultDescription": "A collection of projects, CTF write-ups, and technology notes I've gathered through my learning process.",
+        "defaultImage": "/og-image.jpg",
+        "themeColor": "#191919"
+    },
+    "projects": [
+        {
+            "name": "Arch Hyprland",
+            "url": "ViegPhunt/Arch-Hyprland",
+            "banner": "https://github.com/user-attachments/assets/a004c50a-4001-4596-a48e-97ecc9997843"
+        },
+        {
+            "name": "Auto Setup Linux Terminal",
+            "url": "ViegPhunt/auto-setup-LT",
+            "banner": "https://github.com/user-attachments/assets/20f92535-983f-4f3d-9772-5f79ced80a54" 
+        }
+    ],
+    "about": {
+        "achievements": [
+            {
+                "english": "Consolation Prize - DENSO Factory Hackathon",
+                "vietnamese": "Giải khuyến khích - DENSO Factory Hackathon",
+                "year": 2025
+            },
+            {
+                "english": "Second Prize - PTITCTF",
+                "vietnamese": "Giải nhì - PTITCTF",
+                "year": 2025
+            },
+            {
+                "english": "Consolation Prize - PTITCTF",
+                "vietnamese": "Giải khuyến khích - PTITCTF",
+                "year": 2024
+            }
+        ],
+        "contacts": [
+            {
+                "platform": "Email",
+                "url": "mailto:phungquocvietattt@gmail.com",
+                "display": "phungquocvietattt@gmail.com"
+            },
+            {
+                "platform": "Github",
+                "url": "https://github.com/ViegPhunt",
+                "display": "github.com/ViegPhunt"
+            },
+            {
+                "platform": "Telegram",
+                "url": "https://t.me/viegphunt",
+                "display": "t.me/viegphunt"
+            },
+            {
+                "platform": "Facebook",
+                "url": "https://www.facebook.com/phung.viet.68",
+                "display": "facebook.com/phung.viet.68"
+            }
+        ]
+    }
+}

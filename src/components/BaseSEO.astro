@@ -1,0 +1,124 @@
+---
+import { SEO } from "astro-seo";
+import type { ImageMetadata } from 'astro';
+import data from "@/../data.json";
+
+interface Props {
+	title: string;
+	description: string;
+	image?: string | ImageMetadata;
+	imageAlt?: string;
+	type?: "website" | "article";
+	publishedTime?: string;
+	modifiedTime?: string;
+	tags?: string[];
+}
+
+const {
+	title,
+	description,
+	image = data.seo.defaultImage,
+	imageAlt,
+	type = "website",
+	publishedTime,
+	modifiedTime,
+	tags = [],
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Handle both string URLs and Astro ImageMetadata objects
+let imageURL: string;
+if (typeof image === 'string') {
+	imageURL = new URL(image, Astro.site).toString();
+} else if (image && 'src' in image) {
+	imageURL = new URL(image.src, Astro.site).toString();
+} else {
+	imageURL = new URL(data.seo.defaultImage, Astro.site).toString();
+}
+
+// Structured Data (Schema.org)
+const schema = {
+	"@context": "https://schema.org",
+	"@type": type === "article" ? "Article" : "WebPage",
+	"headline": title,
+	"description": description,
+	"image": imageURL,
+	"url": canonicalURL.toString(),
+	"author": {
+		"@type": "Person",
+		"name": data.seo.author.name,
+		"url": Astro.site?.toString()
+	},
+	...(type === "article" && {
+		"mainEntityOfPage": {
+			"@type": "WebPage",
+			"@id": canonicalURL.toString()
+		},
+		"publisher": {
+			"@type": "Organization",
+			"name": data.seo.publisher.name,
+			"logo": {
+				"@type": "ImageObject",
+				"url": new URL(data.seo.publisher.logo, Astro.site).toString()
+			}
+		}
+	}),
+	...(publishedTime && { "datePublished": publishedTime }),
+	...(modifiedTime && { "dateModified": modifiedTime }),
+	...(tags.length > 0 && { "keywords": tags.join(", ") }),
+};
+---
+
+<SEO
+	title={title}
+	description={description}
+	canonical={canonicalURL.toString()}
+	openGraph={{
+		basic: {
+			title: title,
+			type: type,
+			image: imageURL,
+			url: canonicalURL.toString(),
+		},
+		optional: {
+			description: description,
+			siteName: data.seo.siteName,
+		},
+		image: imageAlt ? {
+			alt: imageAlt,
+		} : undefined,
+		...(type === "article" && publishedTime && {
+			article: {
+				publishedTime: publishedTime,
+				modifiedTime: modifiedTime,
+				authors: [data.seo.author.name],
+				tags: tags,
+			},
+		}),
+	}}
+	twitter={{
+		card: "summary_large_image",
+		site: data.seo.author.twitter,
+		creator: data.seo.author.twitter,
+		title: title,
+		description: description,
+		image: imageURL,
+		imageAlt: imageAlt,
+	}}
+	extend={{
+		meta: [
+			{ name: "viewport", content: "width=device-width, initial-scale=1" },
+			{ name: "theme-color", content: data.seo.themeColor },
+			{ name: "author", content: data.seo.author.name },
+			...(tags.length > 0 ? [{ name: "keywords", content: tags.join(", ") }] : []),
+		],
+		link: [
+			{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+			{ rel: "sitemap", href: "/sitemap-index.xml" },
+		],
+	}}
+/>
+
+<!-- Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

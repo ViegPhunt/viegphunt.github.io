@@ -1,0 +1,12 @@
+{
+    "root": true,
+    "overrides": [
+        {
+            "files": ["*.js", "*.ts", "*.tsx", "*.jsx", "*.astro", "*.json", "*.css", "*.md"],
+            "options": {
+                "useTabs": true,
+                "tabWidth": 4
+            }
+        }
+    ]
+}

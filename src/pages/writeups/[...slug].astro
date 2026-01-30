@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import PostLayout from '@/layouts/PostLayout.astro';
+
+// --- Page Generation ---
+export async function getStaticPaths() {
+    const writeups = await getCollection('writeups');
+    
+    return writeups.map(writeup => ({
+        params: { slug: writeup.slug },
+        props: { writeup },
+    }));
+}
+
+const { writeup } = Astro.props;
+const { Content } = await writeup.render();
+
+// Prepare SEO data
+const ctfName = writeup.slug.split('/')[0];
+const tags = ['CTF', 'Writeup', 'Cybersecurity', ctfName];
+---
+
+<PostLayout
+	title={writeup.data.title}
+	description={writeup.data.description}
+	image={writeup.data.banner}
+	publishedTime={writeup.data.updated}
+	modifiedTime={writeup.data.updated}
+	tags={tags}
+>
+	<Content />
+</PostLayout>

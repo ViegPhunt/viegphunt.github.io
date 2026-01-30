@@ -1,0 +1,126 @@
+---
+// Base layout - Contains <head>, meta tags, and basic HTML structure
+import '@/styles/globals.css';
+import '@/styles/markdown.css';
+import BaseSEO from '@/components/BaseSEO.astro';
+import { ClientRouter } from 'astro:transitions';
+import type { ImageMetadata } from 'astro';
+import data from '@/../data.json';
+
+export interface Props {
+	title?: string;
+	description?: string;
+	image?: string | ImageMetadata;
+	imageAlt?: string;
+	type?: "website" | "article";
+	publishedTime?: string;
+	modifiedTime?: string;
+	tags?: string[];
+}
+
+const {
+	title = data.seo.defaultTitle,
+	description = data.seo.defaultDescription,
+	image,
+	imageAlt,
+	type = "website",
+	publishedTime,
+	modifiedTime,
+	tags = [],
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="font-arial font-jetbrains-mono">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="generator" content={Astro.generator} />
+		<BaseSEO 
+			title={title}
+			description={description}
+			image={image}
+			imageAlt={imageAlt}
+			type={type}
+			publishedTime={publishedTime}
+			modifiedTime={modifiedTime}
+			tags={tags}
+		/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<ClientRouter />
+		<!-- Inline script to prevent theme flash -->
+		<script is:inline>
+			(function() {
+				const theme = localStorage.getItem('theme');
+				if (theme === 'light') {
+					document.documentElement.classList.add('light');
+					document.documentElement.setAttribute('data-theme', 'rose-pine-dawn');
+				} else {
+					document.documentElement.setAttribute('data-theme', 'dark-plus');
+				}
+			})();
+		</script>
+	</head>
+	<body class="antialiased">
+		<slot />
+		<script>
+			import PhotoSwipeLightbox from 'photoswipe/lightbox';
+			import 'photoswipe/style.css';
+
+			let lightbox: PhotoSwipeLightbox | null = null;
+
+			const initPhotoSwipe = () => {
+				const images = document.querySelectorAll<HTMLImageElement>('.prose img,.zoomable');
+
+				images.forEach((img) => {
+				if (img.closest('a.pswp-link')) return;
+				
+				if (img.width < 50) return;
+
+				const anchor = document.createElement('a');
+				anchor.href = img.src;
+				anchor.classList.add('pswp-link');
+				anchor.style.display = 'contents';
+				anchor.target = '_blank';
+
+				const setDimensions = () => {
+					anchor.dataset.pswpWidth = img.naturalWidth.toString();
+					anchor.dataset.pswpHeight = img.naturalHeight.toString();
+				};
+
+				if (img.complete) {
+					setDimensions();
+				} else {
+					img.onload = setDimensions;
+				}
+
+				img.parentNode?.insertBefore(anchor, img);
+					anchor.appendChild(img);
+				});
+
+				lightbox = new PhotoSwipeLightbox({
+					gallery: 'body',
+					children: 'a.pswp-link',
+					pswpModule: () => import('photoswipe'),
+
+					secondaryZoomLevel: 2,
+					maxZoomLevel: 5,
+					
+					zoom: true,
+					close: true,
+					counter: true,
+				});
+
+				lightbox.init();
+			};
+
+			document.addEventListener('astro:page-load', initPhotoSwipe);
+
+			document.addEventListener('astro:before-swap', () => {
+				if (lightbox) {
+				lightbox.destroy();
+				lightbox = null;
+				}
+			});
+		</script>
+	</body>
+</html>

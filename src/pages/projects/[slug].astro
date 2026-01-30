@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import PostLayout from '@/layouts/PostLayout.astro';
+
+// --- Page Generation ---
+export async function getStaticPaths() {
+    const projects = await getCollection("projects");
+    return projects.map((project) => ({
+        params: { slug: project.slug },
+        props: { project },
+    }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+// Prepare SEO data
+const tags = project.data.topics ? project.data.topics.split(', ') : [];
+---
+
+<PostLayout
+	title={project.data.title}
+	description={project.data.description || `Project: ${project.data.title}`}
+	image={project.data.banner}
+	publishedTime={project.data.updated}
+	modifiedTime={project.data.updated}
+	tags={tags}
+	url={project.data.url}
+>
+	<Content />
+</PostLayout>

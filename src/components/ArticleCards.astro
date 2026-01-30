@@ -1,0 +1,239 @@
+---
+import Image from "@/components/OptimizedImage.astro";
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+	projects: Array<{
+		name: string;
+		slug: string;
+		description: string;
+		topics: string[];
+		banner?: ImageMetadata | string;
+		updated?: string;
+	}>;
+	writeups: Array<{
+		name: string;
+		path: string;
+		banner?: ImageMetadata | string;
+		updated?: string;
+	}>;
+}
+
+const { projects, writeups } = Astro.props;
+
+// Prepare sections
+const sections = [];
+
+if (projects.length > 0) {
+	sections.push({
+		title: "Projects",
+		category: "Projects",
+		items: projects.slice(0, 3).map((p) => ({
+			title: p.name,
+			description: p.description,
+			tags: p.topics || [],
+			link: `/projects/${p.slug}`,
+			banner: p.banner,
+			updated: p.updated,
+		})),
+		viewAllLink: "/projects",
+	});
+}
+
+if (writeups.length > 0) {
+	sections.push({
+		title: "Write Up",
+		category: "WriteUp",
+		items: writeups.slice(0, 6).map((w) => ({
+			title: w.name,
+			description: `My write up for some challenges from ${w.name}`,
+			tags: ["writeup"],
+			link: `/writeups/${w.path}`,
+			banner: w.banner,
+			updated: w.updated,
+		})),
+		viewAllLink: "/writeups",
+	});
+}
+---
+
+<div data-articles-container>
+	{ sections.map((section) => (
+		   <div class="mb-12" data-section={section.category}>
+			   <div class="flex justify-between items-end mb-6 pb-4 border-b border-border">
+					<div class="flex items-baseline gap-3">
+						<h2 class="text-2xl font-bold text-text">
+							{section.title}
+						</h2>
+						<span class="text-sm text-muted-foreground hidden" data-result-count>
+							(0 results)
+						</span>
+					</div>
+					<a href={section.viewAllLink} class="text-base font-medium text-text flex items-center gap-2 group/link" data-view-all>
+						View all
+						<i class="fa-solid fa-arrow-right text-xs transition-transform group-hover/link:translate-x-2"></i>
+					</a>
+			   </div>
+
+			   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 gap-y-12 lg:gap-y-16">
+				   {section.items.map((item) => (
+					   <a
+						   href={item.link}
+						   class="h-full group bg-background text-text no-underline flex flex-col overflow-hidden"
+						   data-card
+						   data-title={item.title}
+						   data-description={item.description}
+						   data-tags={item.tags.join(",")}
+					   >
+						   {item.banner && (
+							   <div class="aspect-video w-full overflow-hidden bg-tag rounded-md">
+								   <Image 
+									   src={item.banner} 
+									   alt={item.title}
+									   width={640}
+									   height={360}
+									   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+								   />
+							   </div>
+						   )}
+						   <div class="pt-5 flex flex-col gap-2 flex-grow">
+							   	<h3 class="text-[1.3rem] font-bold m-0 leading-[1.4]">{item.title}</h3>
+								<p class="text-[1rem] opacity-80 leading-[1.6] m-0 flex-grow">{item.description}</p>
+								<div class="flex gap-5 mt-2 text-sm opacity-70">
+									{item.updated && (
+										<div class="flex gap-2">
+											<i class="fa-regular fa-calendar"></i>
+											<span>{new Date(item.updated).toLocaleDateString('en-GB')}</span>
+										</div>
+									)}
+									<div class="flex gap-2">
+										<i class="fa-solid fa-hashtag"></i>
+										<span>
+											{item.tags.slice(0, 3).map((tag, index) => (
+												<>
+													{tag}{index < Math.min(item.tags.length, 3) - 1 ? ' - ' : ''}
+												</>
+											))}
+										</span>
+									</div>
+								</div>
+						   </div>
+					   </a>
+				   ))}
+			   </div>
+		   </div>
+	))}
+
+	   <div class="text-center p-12 text-[1.2rem] opacity-50 select-none" data-no-results style="display: none;">
+		   No results found for "<span id="noResultsQuery"></span>"
+	   </div>
+</div>
+
+<script>
+	function initArticleCards() {
+		const articlesContainer = document.querySelector(
+			"[data-articles-container]",
+		);
+		if (!articlesContainer) return;
+
+		const sections = articlesContainer.querySelectorAll(
+			"[data-section]",
+		) as NodeListOf<HTMLElement>;
+		const noResults = articlesContainer.querySelector(
+			"[data-no-results]",
+		) as HTMLElement;
+		const noResultsQuery = document.getElementById("noResultsQuery");
+
+		// Listen for search query changes
+		document.addEventListener("search-query-changed", (e: Event) => {
+			const customEvent = e as CustomEvent;
+			const query = customEvent.detail.query.toLowerCase().trim();
+
+			if (!query) {
+				// Show all sections, hide result counts
+				sections.forEach((section) => {
+					section.style.display = "block";
+					const resultCount = section.querySelector(
+						"[data-result-count]",
+					) as HTMLElement;
+					const viewAllButton = section.querySelector(
+						"[data-view-all]",
+					) as HTMLElement;
+					if (resultCount) resultCount.style.display = "none";
+					if (viewAllButton) viewAllButton.style.display = "block";
+
+					// Show all cards
+					const cards = section.querySelectorAll(
+						"[data-card]",
+					) as NodeListOf<HTMLElement>;
+					cards.forEach((card) => {
+						card.style.display = "block";
+					});
+				});
+				noResults.style.display = "none";
+				return;
+			}
+
+			// Filter cards
+			let totalVisible = 0;
+
+			sections.forEach((section) => {
+				const cards = section.querySelectorAll(
+					"[data-card]",
+				) as NodeListOf<HTMLElement>;
+				let visibleCount = 0;
+
+				cards.forEach((card) => {
+					const title = card.dataset.title || "";
+					const description = card.dataset.description || "";
+					const tags = card.dataset.tags || "";
+
+					const matches =
+						title.includes(query) ||
+						description.includes(query) ||
+						tags.includes(query);
+
+					if (matches) {
+						card.style.display = "block";
+						visibleCount++;
+						totalVisible++;
+					} else {
+						card.style.display = "none";
+					}
+				});
+
+				// Show/hide section based on visible cards
+				if (visibleCount > 0) {
+					section.style.display = "block";
+					const resultCount = section.querySelector(
+						"[data-result-count]",
+					) as HTMLElement;
+					const viewAllButton = section.querySelector(
+						"[data-view-all]",
+					) as HTMLElement;
+					if (resultCount) {
+						resultCount.textContent = `(${visibleCount} result${visibleCount !== 1 ? "s" : ""})`;
+						resultCount.style.display = "inline";
+					}
+					if (viewAllButton) viewAllButton.style.display = "none";
+				} else {
+					section.style.display = "none";
+				}
+			});
+
+			// Show/hide no results message
+			if (totalVisible === 0) {
+				noResults.style.display = "block";
+				if (noResultsQuery) noResultsQuery.textContent = query;
+			} else {
+				noResults.style.display = "none";
+			}
+		});
+	}
+
+	// Initialize on page load
+	initArticleCards();
+
+	// Re-initialize on navigation (for Astro view transitions)
+	document.addEventListener("astro:page-load", initArticleCards);
+</script>

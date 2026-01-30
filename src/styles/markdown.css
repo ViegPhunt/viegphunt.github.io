@@ -1,0 +1,120 @@
+.markdown-alert {
+    @apply
+    border-l-4
+    px-4
+    py-1
+    my-4
+}
+
+.markdown-alert p {
+    @apply text-text my-2
+}
+
+.markdown-alert-title {
+    @apply
+    font-bold
+    flex
+    items-center
+    my-2
+    gap-2
+    text-text
+}
+
+.markdown-alert-title svg {
+    fill: currentColor;
+}
+
+.markdown-alert-note {
+    @apply border-blue
+}
+
+.markdown-alert-note
+.markdown-alert-title {
+    @apply text-blue
+}
+
+.markdown-alert-tip {
+    @apply border-green
+}
+
+.markdown-alert-tip
+.markdown-alert-title {
+    @apply text-green
+}
+
+.markdown-alert-warning {
+    @apply border-yellow
+}
+
+.markdown-alert-warning
+.markdown-alert-title {
+    @apply text-yellow
+}
+
+.markdown-alert-important {
+    @apply border-purple
+}
+
+.markdown-alert-important
+.markdown-alert-title {
+    @apply text-purple
+}
+
+.markdown-alert-caution {
+    @apply border-red
+}
+
+.markdown-alert-caution
+.markdown-alert-title {
+    @apply text-red
+}
+
+.prose details {
+    @apply
+    my-4
+    px-4
+    py-2
+    bg-surface
+    border
+    border-border
+    rounded-lg;
+}
+
+.prose details[open] {
+    @apply
+    pb-2;
+}
+
+.prose details > *:not(summary) {
+    @apply
+    mt-2;
+}
+
+.prose summary {
+    @apply
+    font-bold
+    cursor-pointer
+    text-text
+    text-lg
+    select-none
+    list-none;
+}
+
+.prose details code span {
+    color: var(--color-text) !important;
+    font-size: 1rem !important;
+}
+
+/* Support for images with specific width (e.g. 49% for grid) */
+.prose img[width] {
+    display: inline-block !important;
+    margin: 0 !important;
+}
+
+.prose p[align="center"] {
+    text-align: center;
+}
+
+.prose a:has(code) {
+    text-decoration-color: var(--color-text);
+}

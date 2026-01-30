@@ -1,0 +1,70 @@
+---
+import ListLayout from "@/layouts/ListLayout.astro";
+import SearchArticles from "@/components/SearchArticles.astro";
+import ArticleCards from "@/components/ArticleCards.astro";
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import avatarImage from "@/assets/images/avatar.jpg";
+
+const projects = await getCollection("projects");
+const writeups = await getCollection("writeups");
+const writeupFolders = [...new Set(writeups.map((w) => w.slug.split("/")[0]))];
+
+const projectsData = projects.map((p) => ({
+	name: p.data.title,
+	slug: p.slug,
+	description: p.data.description,
+	topics: p.data.topics ? p.data.topics.split(", ") : [],
+	banner: p.data.banner,
+	updated: p.data.updated,
+})).sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime());
+
+const writeupDirs = writeupFolders.map((folder) => {
+	const writeup = writeups.find(w => w.slug.startsWith(folder));
+	return {
+		name: writeup?.data.title || folder,
+		path: folder,
+		banner: writeup?.data.banner,
+		updated: writeup?.data.updated,
+	};
+}).sort((a, b) => {
+	if (!a.updated || !b.updated) return 0;
+	return new Date(b.updated).getTime() - new Date(a.updated).getTime();
+});
+---
+
+<ListLayout title="ViegPhunt">
+	<div class="mx-auto pb-[50px] flex flex-col items-center w-full">
+			<div class="mt-[150px] mb-[170px] lg:mt-[80px] lg:mb-[160px] flex flex-col items-center text-center gap-12 lg:flex-col lg:text-center lg:gap-6">
+				<div class="flex-shrink-0 select-none">
+					<Image 
+						src={avatarImage}
+						alt="Avatar"
+						width={200}
+						height={200}
+						format="webp"
+						quality={85}
+						loading="eager"
+						class="w-[160px] h-[160px] lg:w-[200px] lg:h-[200px] rounded-full object-cover border-[1px] border-border shadow-[0_0_20px_rgba(0,0,0,0.8)]"
+					/>
+				</div>
+
+				<div class="w-full flex-1">
+					<h1 class="text-[1.5rem] font-bold text-text mb-8 opacity-100 lg:text-[2.5rem] lg:mb-6">
+						Welcome to my personal website!
+					</h1>
+					<p class="text-[1.2rem] leading-[1.8] text-text opacity-80 lg:text-[1.3rem]">
+						A collection of projects, CTF write-ups, and technology notes I've
+						gathered through my learning process.
+					</p>
+				</div>
+			</div>
+
+			<div class="diviver"></div>
+
+			<div class="w-full">
+				<SearchArticles />
+				<ArticleCards projects={projectsData} writeups={writeupDirs} />
+			</div>
+		</div>
+</ListLayout>

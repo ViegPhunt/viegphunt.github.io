@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Custom fonts */
+@font-face {
+    font-family: Arial;
+    src: url('../assets/fonts/arial/Arial.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Arial;
+    src: url('../assets/fonts/arial/Arial-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: Arial;
+    src: url('../assets/fonts/arial/Arial-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Arial;
+    src: url('../assets/fonts/arial/Arial-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: JetBrains Mono;
+    src: url('../assets/fonts/jetbrains-mono/JetBrainsMonoNerdFont-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
+@layer base {
+    :root {
+        /* Dark Mode (Default) */
+        --color-background: #191919;
+        --color-surface: #212121;
+        --color-text: #ede0d4;
+        --color-border: #333333;
+        --color-link: #89b4fa;
+        --color-tag: #313131;
+        --color-shadow: #ede0d4;
+        --color-blue: #a2bffe;
+        --color-green: #a6e3a1;
+        --color-yellow: #f9e2af;
+        --color-purple: #c6a6e7;
+        --color-red: #f38ba8;
+    }
+
+    .light {
+        /* Light Mode */
+        --color-background: #fffaf3;
+        --color-surface: #f0ede8;
+        --color-text: #191919;
+        --color-border: #bbbbbb;
+        --color-link: #006eff;
+        --color-tag: #e0e0e0;
+        --color-shadow: #808080;
+        --color-blue: #6595fc;
+        --color-green: #7be271;
+        --color-yellow: #fad688;
+        --color-purple: #af79e6;
+        --color-red: #f36d93;
+    }
+
+    /* Base styles */
+    * {
+        @apply m-0 p-0 box-border text-[16px];
+        scrollbar-color: transparent transparent;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    body {
+        @apply font-sans;
+        background-color: var(--color-background);
+        color: var(--color-text);
+    }
+
+    /* Hide default scrollbar */
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+
+    /* Custom Selection Color */
+    ::selection {
+        background-color: var(--color-link);
+        color: var(--color-background);
+    }
+
+    .diviver {
+        height: 1px;
+        width: 100%;
+        background-color: var(--color-border);
+    }
+    
+    .animated-underline {
+        position: relative;
+        text-decoration: none;
+    }
+    
+    .animated-underline::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 1px;
+        left: 0;
+        bottom: -3px;
+        background-color: var(--color-text); /* Use the theme text color */
+        transition: width 0.2s ease;
+    }
+    
+    .animated-underline:hover::after {
+    
+        width: 100%;
+    
+    }
+}

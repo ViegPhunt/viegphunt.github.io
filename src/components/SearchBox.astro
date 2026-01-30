@@ -1,0 +1,98 @@
+---
+interface Props {
+    id?: string;
+    placeholder?: string;
+    onSearch?: string; // Event name to dispatch
+}
+
+const { 
+    id = 'searchBox',
+    placeholder = 'Search...',
+    onSearch = 'search-query-changed'
+} = Astro.props;
+
+const inputId = `${id}Input`;
+const clearId = `${id}Clear`;
+---
+
+<div class="relative flex items-center">
+    <svg
+        class="absolute left-6 text-text opacity-50"
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <input
+        type="text"
+        id={inputId}
+        placeholder={placeholder}
+        class="w-full pl-14 pr-14 py-3 text-[1.1rem] bg-surface text-text border border-border rounded-xl outline-none select-none placeholder:text-text placeholder:opacity-50"
+    />
+    <button
+        type="button"
+        id={clearId}
+        class="absolute right-6 p-1 bg-none text-text border-none rounded-full cursor-pointer flex items-center justify-center opacity-50 transition-all duration-300 ease-in-out hover:opacity-100 hover:bg-border active:scale-90"
+        style="display: none;"
+        aria-label="Clear search"
+    >
+        <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+</div>
+
+<script define:vars={{ inputId, clearId, onSearch }}>
+    function initSearchBox() {
+        const searchInput = document.getElementById(inputId);
+        const clearButton = document.getElementById(clearId);
+
+        if (!searchInput || !clearButton) return;
+
+        // Handle input changes
+        searchInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+
+            // Show/hide clear button
+            clearButton.style.display = value ? 'flex' : 'none';
+
+            // Dispatch custom event
+            document.dispatchEvent(
+                new CustomEvent(onSearch, {
+                    detail: { query: value, inputId: inputId }
+                })
+            );
+        });
+
+        // Handle clear button
+        clearButton.addEventListener('click', () => {
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            document.dispatchEvent(
+                new CustomEvent(onSearch, {
+                    detail: { query: '', inputId: inputId }
+                })
+            );
+        });
+    }
+
+    initSearchBox();
+    document.addEventListener('astro:page-load', initSearchBox);
+</script>
