@@ -11,7 +11,7 @@ import rehypeExternalLinks from 'rehype-external-links';
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://viegphunt.github.io',
+    site: 'https://viegphunt.me',
     integrations: [
         react(), 
         tailwind(),
