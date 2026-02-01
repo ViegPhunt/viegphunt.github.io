@@ -30,9 +30,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // Handle both string URLs and Astro ImageMetadata objects
 let imageURL: string;
 if (typeof image === 'string') {
-	imageURL = new URL(image, Astro.site).toString();
+	// Check if it's an absolute URL (starts with http:// or https://)
+	if (image.startsWith('http://') || image.startsWith('https://')) {
+		imageURL = image;
+	} else {
+		// Relative URL - convert to absolute
+		imageURL = new URL(image, Astro.site).toString();
+	}
 } else if (image && 'src' in image) {
-	imageURL = new URL(image.src, Astro.site).toString();
+	// The src is already optimized path like "/_astro/banner.xxx.webp"
+	const imgSrc = image.src.startsWith('/') ? image.src : `/${image.src}`;
+	imageURL = new URL(imgSrc, Astro.site).toString();
 } else {
 	imageURL = new URL(data.seo.defaultImage, Astro.site).toString();
 }
@@ -85,9 +93,11 @@ const schema = {
 			description: description,
 			siteName: data.seo.siteName,
 		},
-		image: imageAlt ? {
-			alt: imageAlt,
-		} : undefined,
+		image: {
+			alt: imageAlt || title,
+			width: typeof image === 'object' && 'width' in image ? image.width : 1200,
+			height: typeof image === 'object' && 'height' in image ? image.height : 630,
+		},
 		...(type === "article" && publishedTime && {
 			article: {
 				publishedTime: publishedTime,
@@ -104,7 +114,7 @@ const schema = {
 		title: title,
 		description: description,
 		image: imageURL,
-		imageAlt: imageAlt,
+		imageAlt: imageAlt || title,
 	}}
 	extend={{
 		meta: [

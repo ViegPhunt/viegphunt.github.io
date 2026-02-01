@@ -22,6 +22,7 @@ const tags = project.data.topics ? project.data.topics.split(', ') : [];
 	title={project.data.title}
 	description={project.data.description || `Project: ${project.data.title}`}
 	image={project.data.banner}
+	imageAlt={`${project.data.title} - Project Banner`}
 	publishedTime={project.data.updated}
 	modifiedTime={project.data.updated}
 	tags={tags}
