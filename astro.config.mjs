@@ -4,8 +4,9 @@ import astroExpressiveCode from 'astro-expressive-code';
 import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
-import remarkGfm from 'remark-gfm';
 import remarkGithubBlockquoteAlert from 'remark-github-blockquote-alert';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
 
 // https://astro.build/config
@@ -34,11 +35,23 @@ export default defineConfig({
         }
     },
     markdown: {
+        smartypants: true,
+        gfm: true,
         remarkPlugins: [
-            remarkGfm,
             remarkGithubBlockquoteAlert,
         ],
         rehypePlugins: [
+            rehypeSlug,
+            [
+                rehypeAutolinkHeadings, {
+                    behavior: 'append',
+                    properties: {
+                        className: ['anchor-link'],
+                        ariaHidden: 'true',
+                        tabIndex: -1
+                    },
+                }
+            ],
             [
                 rehypeExternalLinks, { 
                     target: '_blank',

@@ -3,6 +3,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/Header';
 import ScrollToTop from '@/components/ScrollToTop';
+import TableOfContents from '@/components/TableOfContents';
 import Footer from '@/components/Footer.astro';
 import Scrollbar from '@/components/Scrollbar';
 import type { ImageMetadata } from 'astro';
@@ -41,8 +42,11 @@ const {
 	tags={tags}
 >
 	<Scrollbar client:load />
-	<div class="min-h-screen flex flex-col">
+	<div class="min-h-screen flex flex-col relative">
 		<Header client:load pathname={Astro.url.pathname} />
+		
+		<!-- Table of Contents -->
+		<TableOfContents client:load />
 		
 		<main class="flex-1 w-[90%] max-w-[950px] mx-auto pt-[100px] pb-[20px] lg:pt-[160px] lg:pb-[50px]">
 			<div class="w-full flex justify-center">
