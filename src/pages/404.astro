@@ -1,0 +1,33 @@
+---
+import ListLayout from "@/layouts/ListLayout.astro";
+---
+
+<ListLayout title="404 - Page Not Found | ViegPhunt">
+	<div class="flex flex-col items-center justify-center min-h-[50vh] text-center">
+		<div class="relative select-none">
+			<h1 class="text-[12rem] md:text-[15rem] font-bold font-mono text-text opacity-10 leading-none">
+				404
+			</h1>
+			<div class="absolute inset-0 flex items-center justify-center">
+				<div class="text-[4rem] md:text-[5rem] font-bold text-red font-mono animate-pulse">
+					&lt;/&gt;
+				</div>
+			</div>
+		</div>
+
+		<div class="relative -mt-8 md:-mt-12 z-10">
+			<h2 class="text-[2rem] md:text-[2.5rem] font-bold mb-4 text-text opacity-60">
+				Page Not Found
+			</h2>
+
+			<p class="text-text opacity-80 mb-8 max-w-md mx-auto text-base md:text-xl">
+				The page you are looking for doesn't exist or has been moved.
+			</p>
+
+			<a href="/" class="inline-flex items-center gap-2 text-text font-bold opacity-80 transition-all duration-300 group">
+				<i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+				<span class="text-[1rem] md:text-[1.25rem]">Back to Home</span>
+			</a>
+		</div>
+	</div>
+</ListLayout>
