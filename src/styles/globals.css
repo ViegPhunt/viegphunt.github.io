@@ -140,12 +140,6 @@
         background-color: var(--color-link);
         color: var(--color-background);
     }
-
-    .diviver {
-        height: 1px;
-        width: 100%;
-        background-color: var(--color-border);
-    }
     
     .animated-underline {
         position: relative;
