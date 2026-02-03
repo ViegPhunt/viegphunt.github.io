@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://viegphunt.me/sitemap.xml
+Sitemap: https://viegphunt.me/sitemap-index.xml
