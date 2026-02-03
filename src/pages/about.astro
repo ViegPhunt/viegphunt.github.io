@@ -25,7 +25,7 @@ function parseHighlight(text: string) {
 	const parts = text.split(/(\*\*[^*]+\*\*)/g);
 	return parts.map((part) => {
 		if (part.startsWith("**") && part.endsWith("**")) {
-			return `<span class="text-[1.3rem] font-bold text-text hover:[text-shadow:0_0_5px_var(--color-shadow)] transition-all">${part.slice(2, -2)}</span>`;
+			return `<span class="text-base lg:text-[1.3rem] font-bold text-text hover:[text-shadow:0_0_5px_var(--color-shadow)] transition-all">${part.slice(2, -2)}</span>`;
 		}
 		return part;
 	}).join("");
@@ -35,7 +35,7 @@ function parseHighlight(text: string) {
 <ListLayout title="About | ViegPhunt">
 	<div class="w-full max-w-[950px] mx-auto">
 		<div class="w-full flex justify-between items-center">
-			<h1 class="my-8 text-[3rem] font-bold text-text">About Me</h1>
+			<h1 class="my-8 text-[2rem] lg:text-[3rem] font-bold text-text">About Me</h1>
 			<div class="flex pt-[6px] items-center gap-4">
 				<span
 					class="font-semibold cursor-pointer select-none transition-opacity duration-300"
@@ -60,7 +60,7 @@ function parseHighlight(text: string) {
 				{
 					content.english.paragraphs.map((paragraph) => (
 						<p
-							class="mb-7 text-[1.3rem] leading-[1.9] text-text text-justify content-english"
+							class="mb-7 text-base lg:text-[1.3rem] leading-[1.9] text-text text-justify content-english"
 							set:html={parseHighlight(paragraph)}
 						/>
 					))
@@ -68,7 +68,7 @@ function parseHighlight(text: string) {
 				{
 					content.vietnamese.paragraphs.map((paragraph) => (
 						<p
-							class="mb-7 text-[1.3rem] leading-[1.9] text-text text-justify content-vietnamese hidden"
+							class="mb-7 text-base lg:text-[1.3rem] leading-[1.9] text-text text-justify content-vietnamese hidden"
 							set:html={parseHighlight(paragraph)}
 						/>
 					))
@@ -79,18 +79,18 @@ function parseHighlight(text: string) {
 		<div class="h-px w-full bg-border"></div>
 
 		<div class="my-[50px] mb-12 w-full">
-			<h1 class="my-4 text-[2rem] font-bold text-text">Achievements</h1>
+			<h1 class="my-4 text-[1.5rem] lg:text-[2rem] font-bold text-text">Achievements</h1>
 			<div class="w-full text-text">
 				{
 					data.about.achievements.map((achievement) => (
 						<div class="mb-5 flex gap-3 items-start before:content-['•'] before:text-[1.5rem] before:text-text before:leading-[1.5rem] before:mt-[2px]">
 							<p
-								class="font-medium text-[1.2rem] text-text flex-1 achievement-english"
+								class="font-medium text-base lg:text-[1.2rem] text-text flex-1 achievement-english"
 							>
 								{achievement.english} {achievement.year}
 							</p>
 							<p
-								class="font-medium text-[1.2rem] text-text flex-1 achievement-vietnamese hidden"
+								class="font-medium text-base lg:text-[1.2rem] text-text flex-1 achievement-vietnamese hidden"
 							>
 								{achievement.vietnamese} {achievement.year}
 							</p>
@@ -103,12 +103,12 @@ function parseHighlight(text: string) {
 		<div class="h-px w-full bg-border"></div>
 
 		<div class="my-[50px] mb-12 w-full">
-			<h1 class="my-4 text-[2rem] font-bold text-text">Contacts</h1>
+			<h1 class="my-4 text-[1.5rem] lg:text-[2rem] font-bold text-text">Contacts</h1>
 			<div class="w-full text-text">
 				{
 					data.about.contacts.map((contact) => (
 						<div class="mb-5 flex gap-3 items-start before:content-['•'] before:text-[1.5rem] before:text-text before:leading-[1.5rem] before:mt-[2px]">
-							<p class="font-bold text-[1.2rem] text-text">
+							<p class="font-bold text-base lg:text-[1.2rem] text-text">
 								{contact.platform}:
 							</p>
 							<div class="relative group">
@@ -116,7 +116,7 @@ function parseHighlight(text: string) {
 									href={contact.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-text text-[1.2rem] no-underline animated-underline"
+									class="text-text text-base lg:text-[1.2rem] no-underline animated-underline"
 								> {contact.display}
 								</a>
 							</div>
