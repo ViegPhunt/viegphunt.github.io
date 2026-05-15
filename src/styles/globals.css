@@ -90,6 +90,9 @@
         --color-yellow: #f9e2af;
         --color-purple: #c6a6e7;
         --color-red: #f38ba8;
+        /* Semantic typography tokens mapped to theme colors */
+        --text-main: var(--color-text);
+        --text-muted: var(--color-border);
     }
 
     .light {
@@ -106,16 +109,20 @@
         --color-yellow: #fad688;
         --color-purple: #af79e6;
         --color-red: #f36d93;
+        /* Light mode overrides for semantic tokens */
+        --text-main: var(--color-text);
+        --text-muted: var(--color-border);
     }
 
     /* Base styles */
     * {
-        @apply m-0 p-0 box-border text-[16px];
+        @apply m-0 p-0 box-border;
         scrollbar-color: transparent transparent;
         -webkit-tap-highlight-color: transparent;
     }
 
     html {
+        @apply text-base antialiased;
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
@@ -158,8 +165,6 @@
     }
     
     .animated-underline:hover::after {
-    
         width: 100%;
-    
     }
 }

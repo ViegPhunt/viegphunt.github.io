@@ -28,6 +28,34 @@ export default {
 				purple: 'var(--color-purple)',
 				red: 'var(--color-red)',
 			},
+
+			/* Centralized typography overrides for @tailwindcss/typography plugin */
+			typography: ({ theme }) => ({
+				DEFAULT: {
+					css: {
+						color: 'var(--text-main)',
+						a: {
+							color: 'var(--color-link)',
+							textDecoration: 'underline',
+							'&:hover': { color: 'var(--color-link)' },
+						},
+						h1: { color: 'var(--text-main)', scrollMarginTop: theme('spacing.header') },
+						h2: { color: 'var(--text-main)' },
+						h3: { color: 'var(--text-main)' },
+						blockquote: { color: 'var(--text-muted)', borderLeftColor: 'var(--color-border)' },
+						code: { color: 'var(--text-main)', backgroundColor: 'var(--color-tag)' },
+						'thead th': { color: 'var(--text-main)' },
+						'tbody td': { borderTopColor: 'var(--color-border)' },
+					},
+				},
+				invert: {
+					css: {
+						color: 'var(--text-main)',
+						a: { color: 'var(--color-link)' },
+						code: { backgroundColor: 'var(--color-tag)' },
+					},
+				},
+			}),
 		},
 	},
 	plugins: [

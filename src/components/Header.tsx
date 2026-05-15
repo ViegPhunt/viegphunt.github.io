@@ -67,17 +67,18 @@ export default function Header({ pathname }: { pathname: string }) {
                 <a href="/" className="text-2xl font-bold text-text no-underline p-[0.5rem] lg:p-0">
                     ViegPhunt
                 </a>
-                <div
+                <button
+                    type="button"
                     className="p-2 w-[45px] h-[45px] flex items-center justify-center fill-current text-text transition-transform duration-200 ease-in-out z-[1200] lg:hidden active:scale-110"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                     aria-controls="mobile-menu"
                     aria-expanded={isMenuOpen}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="w-full h-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="w-full h-full" aria-hidden="true" focusable="false">
                         <path d={isMenuOpen ? "M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" : "M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"}/>
                     </svg>
-                </div>
+                </button>
                 <div
                     className={`fixed top-header left-0 w-screen h-screen bg-black/20 backdrop-blur-sm transition-opacity z-[800] lg:hidden ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsMenuOpen(false)}

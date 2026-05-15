@@ -40,12 +40,11 @@ const isRemote = isString && (src.startsWith('http://') || src.startsWith('https
 	<!-- For local images, use Astro's Image component for WebP optimization -->
 	<Image 
 		src={src as any}
-		alt={alt}
+		
 		width={width}
 		height={height}
 		loading={loading}
 		class={className}
-		format="webp"
 		quality={85}
 	/>
 )}
