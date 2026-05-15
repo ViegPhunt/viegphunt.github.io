@@ -38,7 +38,7 @@ if (typeof image === 'string') {
 		imageURL = new URL(image, Astro.site).toString();
 	}
 } else if (image && 'src' in image) {
-	// The src is already optimized path like "/_astro/banner.xxx.avif"
+	// The src is already optimized path like "/_astro/banner.xxx.webp"
 	const imgSrc = image.src.startsWith('/') ? image.src : `/${image.src}`;
 	imageURL = new URL(imgSrc, Astro.site).toString();
 } else {
