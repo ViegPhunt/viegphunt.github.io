@@ -37,15 +37,15 @@ const isRemote = isString && (src.startsWith('http://') || src.startsWith('https
 		decoding="async"
 	/>
 ) : (
-	<!-- For local images, use Astro's Image component for WebP optimization -->
+	<!-- For local images, use Astro's Image component for AVIF optimization -->
 	<Image 
 		src={src as any}
 		alt={alt}
-		
 		width={width}
 		height={height}
 		loading={loading}
 		class={className}
+		format="avif"
 		quality={85}
 	/>
 )}
