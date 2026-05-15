@@ -131,8 +131,8 @@ export default {
 							'@screen lg': {
 								fontSize: '0.9rem',
 							},
-							'&::before': { content: '""' },
-							'&::after': { content: '""' },
+							'&::before': { content: 'none !important' },
+							'&::after': { content: 'none !important' },
 						},
 						ul: {
 							color: 'var(--text-main)',
