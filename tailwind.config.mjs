@@ -53,14 +53,8 @@ export default {
 						'--tw-prose-pre-bg': 'var(--color-surface)',
 						'--tw-prose-th-borders': 'var(--color-border)',
 						'--tw-prose-td-borders': 'var(--color-border)',
-						'code::before': {
-							display: 'none !important',
-							content: '"" !important',
-						},
-						'code::after': {
-							display: 'none !important',
-							content: '"" !important',
-						},
+						'code::before': { content: 'none !important' },
+						'code::after': { content: 'none !important' },
 						a: {
 							color: 'var(--color-link)',
 							textDecoration: 'underline',
