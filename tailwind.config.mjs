@@ -53,6 +53,14 @@ export default {
 						'--tw-prose-pre-bg': 'var(--color-surface)',
 						'--tw-prose-th-borders': 'var(--color-border)',
 						'--tw-prose-td-borders': 'var(--color-border)',
+						'code::before': {
+							display: 'none !important',
+							content: '"" !important',
+						},
+						'code::after': {
+							display: 'none !important',
+							content: '"" !important',
+						},
 						a: {
 							color: 'var(--color-link)',
 							textDecoration: 'underline',
@@ -131,8 +139,6 @@ export default {
 							'@screen lg': {
 								fontSize: '0.9rem',
 							},
-							'&::before': { content: 'none !important' },
-							'&::after': { content: 'none !important' },
 						},
 						ul: {
 							color: 'var(--text-main)',
