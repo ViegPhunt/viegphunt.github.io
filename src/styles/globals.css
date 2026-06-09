@@ -77,6 +77,14 @@
 
 @layer base {
     :root {
+        --page-gutter: clamp(1rem, 2.5vw, 2rem);
+        --page-gutter-wide: clamp(1.25rem, 4vw, 8rem);
+        --page-max: 1200px;
+        --page-max-narrow: 950px;
+        --page-stack: clamp(1.25rem, 3vw, 2rem);
+        --section-stack: clamp(2.5rem, 5vw, 4.5rem);
+        --content-measure: 68ch;
+
         /* Dark Mode (Default) */
         --color-background: #191919;
         --color-surface: #212121;
@@ -128,9 +136,32 @@
     }
 
     body {
-        @apply font-sans;
+        @apply font-sans text-base antialiased;
         background-color: var(--color-background);
         color: var(--color-text);
+        line-height: 1.65;
+        letter-spacing: -0.01em;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        text-wrap: balance;
+    }
+
+    p,
+    li {
+        line-height: 1.7;
+    }
+
+    a {
+        text-underline-offset: 0.18em;
     }
 
     /* Hide default scrollbar */
@@ -166,5 +197,54 @@
     
     .animated-underline:hover::after {
         width: 100%;
+    }
+}
+
+@layer components {
+    .page-shell {
+        width: min(calc(100% - (var(--page-gutter) * 2)), var(--page-max));
+        margin-inline: auto;
+    }
+
+    .page-shell--narrow {
+        max-width: var(--page-max-narrow);
+    }
+
+    .page-main {
+        width: min(calc(100% - (var(--page-gutter) * 2)), var(--page-max));
+        margin-inline: auto;
+        padding-top: calc(80px + var(--section-stack));
+        padding-bottom: var(--section-stack);
+    }
+
+    @media (min-width: 1024px) {
+        .page-main {
+            padding-top: calc(80px + (var(--section-stack) * 1.25));
+            padding-bottom: calc(var(--section-stack) * 1.1);
+        }
+    }
+
+    .page-main--narrow {
+        max-width: var(--page-max-narrow);
+    }
+
+    .page-main--wide {
+        max-width: var(--page-max);
+    }
+
+    .page-stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--section-stack);
+    }
+
+    .content-flow > * + * {
+        margin-top: var(--page-stack);
+    }
+
+    .section-divider {
+        height: 1px;
+        width: 100%;
+        background-color: var(--color-border);
     }
 }

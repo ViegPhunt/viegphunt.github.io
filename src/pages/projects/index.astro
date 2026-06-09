@@ -17,7 +17,7 @@ const projectsData = allProjects.map((p) => ({
 ---
 
 <ListLayout title="Projects | ViegPhunt">
-	<div class="w-full mt-[32px] pb-[50px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 gap-y-12 lg:gap-y-16">
+	<div class="w-full pb-[var(--section-stack)] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 gap-y-8 lg:gap-y-10">
 		{projectsData.map((item) => (
 			<a
 				href={item.link}
@@ -34,10 +34,10 @@ const projectsData = allProjects.map((p) => ({
 						/>
 					</div>
 				)}
-				<div class="pt-5 flex flex-col gap-2 flex-grow">
-					<h3 class="text-[1.3rem] font-bold m-0 leading-[1.4]">{item.name}</h3>
-					<p class="text-[1rem] opacity-70 leading-[1.6] m-0 flex-grow">{item.description}</p>
-					<div class="flex gap-5 mt-2 text-sm opacity-60">
+				<div class="pt-4 flex flex-col gap-2 flex-grow">
+					<h3 class="text-[1.2rem] font-bold m-0 leading-tight">{item.name}</h3>
+					<p class="text-[0.95rem] text-text/70 leading-relaxed m-0 flex-grow">{item.description}</p>
+					<div class="flex gap-5 mt-1 text-sm text-text/60">
 						{item.updated && (
 							<div class="flex gap-2">
 								<i class="fa-regular fa-calendar"></i>
