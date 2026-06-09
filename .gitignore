@@ -27,3 +27,7 @@ pnpm-debug.log*
 # content
 src/content/*
 !src/content/config.ts
+
+# agents and skills
+.agents/
+skills-lock.json
