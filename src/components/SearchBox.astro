@@ -15,7 +15,7 @@ const inputId = `${id}Input`;
 const clearId = `${id}Clear`;
 ---
 
-<div class="relative flex items-center">
+<div class="surface-panel relative flex items-center rounded-xl transition-colors focus-within:border-purple">
     <svg
         class="absolute left-6 text-text opacity-50"
         width="22"
@@ -26,21 +26,23 @@ const clearId = `${id}Clear`;
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
+        aria-hidden="true"
     >
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
     </svg>
     <input
-        type="text"
+        type="search"
         id={inputId}
         placeholder={placeholder}
-        class="w-full pl-14 pr-14 py-3 text-[1.1rem] bg-surface text-text border border-border rounded-xl outline-none select-none placeholder:text-text placeholder:opacity-50"
+        class="w-full bg-transparent pl-14 pr-14 py-3 text-[1.1rem] text-text outline-none placeholder:text-text placeholder:opacity-50"
+        aria-label={placeholder}
+        autocomplete="off"
     />
     <button
         type="button"
         id={clearId}
-        class="absolute right-6 p-1 bg-none text-text border-none rounded-full cursor-pointer flex items-center justify-center opacity-50 transition-all duration-300 ease-in-out hover:opacity-100 hover:bg-border active:scale-90"
-        style="display: none;"
+        class="absolute right-6 hidden p-1 bg-none text-text border-none rounded-full cursor-pointer items-center justify-center opacity-60 transition-all duration-300 ease-in-out hover:opacity-100 hover:bg-tag active:scale-90"
         aria-label="Clear search"
     >
         <svg
@@ -52,6 +54,7 @@ const clearId = `${id}Clear`;
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            aria-hidden="true"
         >
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -64,14 +67,20 @@ const clearId = `${id}Clear`;
         const searchInput = document.getElementById(inputId);
         const clearButton = document.getElementById(clearId);
 
-        if (!searchInput || !clearButton) return;
+        if (
+            !(searchInput instanceof HTMLInputElement) ||
+            !(clearButton instanceof HTMLButtonElement) ||
+            searchInput.dataset.initialized === 'true'
+        ) return;
+        searchInput.dataset.initialized = 'true';
 
         // Handle input changes
-        searchInput.addEventListener('input', (e) => {
-            const value = e.target.value;
+        searchInput.addEventListener('input', () => {
+            const value = searchInput.value;
 
             // Show/hide clear button
-            clearButton.style.display = value ? 'flex' : 'none';
+            clearButton.classList.toggle('hidden', !value);
+            clearButton.classList.toggle('flex', Boolean(value));
 
             // Dispatch custom event
             document.dispatchEvent(
@@ -84,7 +93,9 @@ const clearId = `${id}Clear`;
         // Handle clear button
         clearButton.addEventListener('click', () => {
             searchInput.value = '';
-            clearButton.style.display = 'none';
+            clearButton.classList.add('hidden');
+            clearButton.classList.remove('flex');
+            searchInput.focus();
             document.dispatchEvent(
                 new CustomEvent(onSearch, {
                     detail: { query: '', inputId: inputId }

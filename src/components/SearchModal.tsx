@@ -63,10 +63,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         }
     }, [isOpen, allItems.length]);
 
+    const titleId = 'search-modal-title';
+    const inputId = 'site-search-input';
+
     // Focus input when modal opens
     useEffect(() => {
         if (isOpen && inputRef.current) {
-            inputRef.current.focus();
+            window.setTimeout(() => inputRef.current?.focus(), 0);
         }
     }, [isOpen]);
 
@@ -120,20 +123,22 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
     return (
         <>
-            {/* Overlay backdrop */}
             <div 
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[9998]"
+                className="fixed inset-0 z-[calc(var(--z-modal)-1)] bg-background/75 backdrop-blur-sm"
                 onClick={onClose}
+                aria-hidden="true"
             />
             
-            {/* Modal */}
-            <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] px-4 pointer-events-none">
+            <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center px-4 pt-[10dvh] pointer-events-none">
                 <div 
                     className="w-full max-w-2xl relative pointer-events-auto"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby={titleId}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {/* Search box */}
-                    <div className="bg-background border border-border rounded-2xl shadow-2xl">
+                    <h2 id={titleId} className="sr-only">Search content</h2>
+                    <div className="surface-panel rounded-2xl transition-colors focus-within:border-purple">
                         <div className="relative flex items-center p-4">
                             <svg
                                 className="m-1 mr-4 text-text opacity-50"
@@ -142,25 +147,30 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                aria-hidden="true"
                             >
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <path d="m21 21-4.35-4.35"></path>
                             </svg>
                             <input
+                                id={inputId}
                                 ref={inputRef}
-                                type="text"
+                                type="search"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                                 placeholder="Search by title, description, or tags..."
-                                className="flex-1 bg-transparent text-text text-lg outline-none placeholder:text-text placeholder:opacity-50"
+                                className="min-w-0 flex-1 bg-transparent text-text text-lg outline-none placeholder:text-text placeholder:opacity-50"
+                                aria-label="Search by title, description, or tags"
+                                autoComplete="off"
                             />
                             {query && (
                                 <button
+                                    type="button"
                                     onClick={handleClear}
-                                    className="ml-2 p-1 text-text border-none rounded-full cursor-pointer flex items-center justify-center opacity-50 hover:text-text transition-all duration-300 ease-in-out hover:opacity-100 hover:bg-border active:scale-90"
+                                    className="ml-2 p-1 text-text border-none rounded-full cursor-pointer flex items-center justify-center opacity-60 hover:text-text transition-all duration-300 ease-in-out hover:opacity-100 hover:bg-tag active:scale-90"
                                     aria-label="Clear search"
                                 >
                                     <svg
@@ -169,9 +179,10 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
                                     >
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -181,12 +192,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         </div>
                     </div>
 
-                    {/* Results dropdown - appears below search box */}
                     {query && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-2xl shadow-2xl max-h-[60vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                        <div className="surface-panel absolute top-full left-0 right-0 mt-2 max-h-[min(60dvh,30rem)] overflow-y-auto rounded-2xl [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                             {results.length === 0 ? (
-                                <div className="text-center py-8 text-text opacity-50 px-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className="w-12 h-12 mx-auto mb-3">
+                                <div className="text-center py-8 text-text/60 px-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className="w-12 h-12 mx-auto mb-3" aria-hidden="true">
                                         <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/>
                                     </svg>
                                     <p>No results found for "{query}"</p>
@@ -197,10 +207,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                         <a
                                             key={index}
                                             href={result.link}
-                                            className="block p-4 rounded-lg border border-border hover:bg-surface transition-colors no-underline group"
+                                            className="block p-4 rounded-lg border border-transparent hover:border-border hover:bg-raised transition-colors no-underline group"
                                             onClick={onClose}
                                         >
-                                            <h3 className="mb-3 text-xl text-text font-bold group-hover:text-text/80 transition-colors">{result.title}</h3>
+                                            <div className="mb-2 text-[10px] uppercase tracking-[0.18em] text-purple font-bold">{result.type}</div>
+                                            <h3 className="mb-3 text-xl text-text font-bold group-hover:text-purple transition-colors">{result.title}</h3>
                                             <p className="text-text/70 text-sm">{result.description}</p>
                                             {result.tags.length > 0 && (
                                                 <div className="flex gap-2 mt-2 flex-wrap">

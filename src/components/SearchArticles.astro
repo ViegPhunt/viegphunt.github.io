@@ -4,9 +4,9 @@ import SearchBox from './SearchBox.astro';
 
 <div class="my-[var(--section-stack)]">
 	<div class="mb-4">
-		<div class="text-2xl font-bold text-text">Search Articles</div>
+		<h2 class="text-2xl font-bold text-text">Search Articles</h2>
 	</div>
-	<form class="w-full" id="searchForm">
+	<form class="w-full" id="searchForm" role="search">
 		<SearchBox 
 			id="search"
 			placeholder="Search by title, description or tags..."
