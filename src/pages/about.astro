@@ -37,21 +37,29 @@ function parseHighlight(text: string) {
 		<div class="w-full flex justify-between items-center gap-4">
 			<h1 class="my-8 text-[2rem] lg:text-[3rem] font-bold text-text">About Me</h1>
 			<div class="flex pt-[6px] items-center gap-4">
-				<span
-					class="font-semibold cursor-pointer select-none transition-opacity duration-300"
+				<button
+					type="button"
+					class="rounded-md px-1 font-semibold transition-opacity duration-300"
 					id="lang-en"
 				>
 					EN
-				</span>
-				<button class="relative w-[46px] h-[26px] bg-background border-2 border-border rounded-full cursor-pointer flex items-center" id="languageToggle">
+				</button>
+				<button
+					type="button"
+					class="relative w-[46px] h-[26px] bg-surface border-2 border-border rounded-full cursor-pointer flex items-center transition-colors hover:border-purple"
+					id="languageToggle"
+					aria-label="Switch language"
+					aria-pressed="false"
+				>
 					<span id="language-toggle-slider" class="absolute left-[2px] h-[18px] w-[18px] bg-text rounded-full transition-transform duration-300 ease-in-out"></span>
 				</button>
-				<span
-					class="font-semibold cursor-pointer select-none transition-opacity duration-300"
+				<button
+					type="button"
+					class="rounded-md px-1 font-semibold transition-opacity duration-300"
 					id="lang-vn"
 				>
 					VN
-				</span>
+				</button>
 			</div>
 		</div>
 
@@ -60,7 +68,7 @@ function parseHighlight(text: string) {
 				{
 					content.english.paragraphs.map((paragraph) => (
 						<p
-							class="mb-7 text-base lg:text-[1.3rem] leading-[1.9] text-text text-justify content-english"
+							class="mb-7 text-left text-base leading-[1.9] text-text [text-wrap:pretty] lg:text-[1.3rem] content-english"
 							set:html={parseHighlight(paragraph)}
 						/>
 					))
@@ -68,7 +76,7 @@ function parseHighlight(text: string) {
 				{
 					content.vietnamese.paragraphs.map((paragraph) => (
 						<p
-							class="mb-7 text-base lg:text-[1.3rem] leading-[1.9] text-text text-justify content-vietnamese hidden"
+							class="mb-7 text-left text-base leading-[1.9] text-text [text-wrap:pretty] lg:text-[1.3rem] content-vietnamese hidden"
 							set:html={parseHighlight(paragraph)}
 						/>
 					))
@@ -133,8 +141,8 @@ function parseHighlight(text: string) {
 
 		const toggleButton = document.getElementById("languageToggle") as HTMLButtonElement;
 		const toggleSlider = document.getElementById("language-toggle-slider") as HTMLButtonElement;
-		const langEn = document.getElementById("lang-en") as HTMLElement;
-		const langVn = document.getElementById("lang-vn") as HTMLElement;
+		const langEn = document.getElementById("lang-en") as HTMLButtonElement;
+		const langVn = document.getElementById("lang-vn") as HTMLButtonElement;
 
 		function updateLanguage(lang: "english" | "vietnamese") {
 			currentLanguage = lang;
@@ -150,6 +158,9 @@ function parseHighlight(text: string) {
 				langEn.classList.remove("opacity-30");
 				langVn.classList.add("opacity-30");
 				langVn.classList.remove("opacity-100");
+				langEn.setAttribute("aria-pressed", "true");
+				langVn.setAttribute("aria-pressed", "false");
+				toggleButton.setAttribute("aria-pressed", "false");
 				// Toggle content visibility
 				allEnglishContent.forEach((el) => el.classList.remove("hidden"));
 				allVietnameseContent.forEach((el) => el.classList.add("hidden"));
@@ -161,6 +172,9 @@ function parseHighlight(text: string) {
 				langVn.classList.remove("opacity-30");
 				langEn.classList.add("opacity-30");
 				langEn.classList.remove("opacity-100");
+				langVn.setAttribute("aria-pressed", "true");
+				langEn.setAttribute("aria-pressed", "false");
+				toggleButton.setAttribute("aria-pressed", "true");
 				// Toggle content visibility
 				allEnglishContent.forEach((el) => el.classList.add("hidden"));
 				allVietnameseContent.forEach((el) => el.classList.remove("hidden"));
