@@ -42,7 +42,7 @@ const {
 	tags={tags}
 >
 	<Scrollbar client:load />
-	<div class="min-h-screen flex flex-col relative">
+	<div class="min-h-[100dvh] flex flex-col relative">
 		<Header client:load pathname={Astro.url.pathname} />
 		
 		<!-- Table of Contents -->
@@ -52,48 +52,51 @@ const {
 			<div class="w-full flex justify-center">
 				<!-- Article Content -->
 				<div class="w-full">
-					<!-- Article Header -->
-					<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-						<h1 class="mt-8 text-3xl md:text-5xl font-bold text-text leading-tight flex-1">
-							{title}
-						</h1>
+					<header class="surface-panel article-hero mb-10">
+						<div class="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+							<div class="min-w-0 flex-1">
+								<p class="mb-3 font-mono text-sm font-semibold text-purple">
+									Article
+								</p>
+								<h1 class="text-3xl font-bold leading-tight text-text md:text-5xl">
+									{title}
+								</h1>
+							</div>
 
-						{url && (
-							<a
-								href={url}
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-link md:text-lg no-underline hover:underline font-medium shrink-0 md:mb-2 group/link"
-							>
-								View on GitHub
-								<i class="fa-solid fa-arrow-right text-xs transition-transform group-hover/link:translate-x-2"></i>
-							</a>
+							{url && (
+								<a
+									href={url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-tag px-4 py-2.5 font-mono text-sm font-bold text-link no-underline transition-all duration-300 hover:-translate-y-0.5 hover:border-purple active:translate-y-0 md:mt-1"
+								>
+									View on GitHub
+									<i class="fa-solid fa-arrow-right text-xs transition-transform"></i>
+								</a>
+							)}
+						</div>
+						
+						{description && (
+							<p class="mt-5 max-w-[65ch] text-lg leading-relaxed text-text/75 md:text-xl">{description}</p>
 						)}
-					</div>
-					
-					{description && (
-						<p class="text-[1.25rem] text-text mb-3">{description}</p>
-					)}
-					
-					{tags.length > 0 && (
-						<div class="mb-3 flex gap-2 flex-wrap items-center">
-							<i class="fa-solid fa-hashtag"></i>
-							{tags.map(tag => (
-								<span class="px-2 py-1 bg-tag rounded-xl text-text text-xs">
-									{tag}
-								</span>
-							))}
-						</div>
-					)}
-					
-					{publishedTime && (
-						<div class="mb-3 text-base text-text flex items-center gap-2">
-							<i class="fa-regular fa-clock translate-y-[-1.5px]"></i>
-							<span>
-								{new Date(publishedTime).toLocaleDateString('en-GB')}
-							</span>
-						</div>
-					)}
+						
+						{(tags.length > 0 || publishedTime) && (
+							<div class="mt-6 flex flex-wrap gap-2">
+								{publishedTime && (
+									<span class="meta-chip">
+										<i class="fa-regular fa-clock"></i>
+										{new Date(publishedTime).toLocaleDateString('en-GB')}
+									</span>
+								)}
+								{tags.map(tag => (
+									<span class="meta-chip">
+										<i class="fa-solid fa-hashtag"></i>
+										{tag}
+									</span>
+								))}
+							</div>
+						)}
+					</header>
 
 					<article class="prose prose-lg max-w-none max-md:p-0">
 						<!-- Article Content (slot) -->
