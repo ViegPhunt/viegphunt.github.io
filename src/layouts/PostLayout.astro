@@ -45,10 +45,9 @@ const {
 	<div class="min-h-[100dvh] flex flex-col relative">
 		<Header client:load pathname={Astro.url.pathname} />
 		
-		<!-- Table of Contents -->
-		<TableOfContents client:visible />
-		
 		<main class="page-main page-main--narrow">
+			<TableOfContents client:load />
+
 			<div class="w-full flex justify-center">
 				<!-- Article Content -->
 				<div class="w-full">
