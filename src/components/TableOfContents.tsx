@@ -15,12 +15,14 @@ export default function TableOfContents() {
         const article = document.querySelector('article');
         if (!article) return;
 
-        const headingElements = article.querySelectorAll('h1, h2, h3, h4, h5, h6');
-        const headingData: Heading[] = Array.from(headingElements).map((heading) => ({
-            id: heading.id,
-            text: heading.textContent?.replace('#', '').trim() || '',
-            level: parseInt(heading.tagName.substring(1)),
-        }));
+        const headingElements = article.querySelectorAll('h2, h3, h4');
+        const headingData: Heading[] = Array.from(headingElements)
+            .filter((heading) => heading.id)
+            .map((heading) => ({
+                id: heading.id,
+                text: heading.textContent?.replace('#', '').trim() || '',
+                level: parseInt(heading.tagName.substring(1)),
+            }));
 
         setHeadings(headingData);
 
@@ -43,9 +45,7 @@ export default function TableOfContents() {
         });
 
         return () => {
-            headingElements.forEach((heading) => {
-                observer.unobserve(heading);
-            });
+            observer.disconnect();
         };
     }, []);
 
@@ -67,17 +67,17 @@ export default function TableOfContents() {
     if (headings.length === 0) return null;
 
     return (
-        <nav className="toc-container hidden 2xl:block fixed right-8 top-[180px] w-[240px] max-h-[calc(100vh-220px)] overflow-y-auto">
-            <div className="sticky top-0 bg-background pb-2">
-                <h3 className="text-base font-bold text-text uppercase tracking-wide mb-3">
-                    Table of Contents
+        <nav className="surface-panel toc-container hidden 2xl:block fixed right-8 top-[180px] w-[250px] max-h-[calc(100dvh-220px)] overflow-y-auto rounded-2xl p-4 backdrop-blur-xl">
+            <div className="sticky top-0 bg-surface/95 pb-2">
+                <h3 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.16em] text-purple">
+                    Contents
                 </h3>
             </div>
             
-            <ul className="space-y-2 text-base border-l-2 border-border pl-0">
+            <ul className="space-y-1 text-sm border-l border-border pl-0">
                 {headings.map((heading) => {
                     const isActive = activeId === heading.id;
-                    const paddingLeft = (heading.level - 1) * 20;
+                    const paddingLeft = Math.max(0, heading.level - 2) * 14;
                     
                     return (
                         <li
@@ -89,11 +89,11 @@ export default function TableOfContents() {
                                 href={`#${heading.id}`}
                                 onClick={(e) => handleClick(e, heading.id)}
                                 className={`
-                                    block py-1 px-3 -ml-[2px] border-l-2 transition-all duration-200
+                                    block rounded-r-md py-1.5 px-3 -ml-[1px] border-l transition-all duration-200
                                     hover:text-link hover:border-link
                                     ${
                                         isActive
-                                        ? 'text-link border-link font-medium'
+                                        ? 'text-link border-link font-semibold bg-tag'
                                         : 'text-text/70 border-transparent'
                                     }
                                 `}
