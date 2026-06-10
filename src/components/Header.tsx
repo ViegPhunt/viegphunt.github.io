@@ -23,9 +23,9 @@ export default function Header({ pathname }: { pathname: string }) {
         const normalizedHref = href.replace(/\/$/, '') || '/';
         const isActive = normalizedPathname === normalizedHref;
         
-        const baseClasses = 'w-full block text-lg text-center font-bold text-text py-4 lg:py-2 lg:px-2';
-        const activeClasses = 'bg-tag lg:bg-transparent lg:relative lg:after:content-[""] lg:after:absolute lg:after:w-full lg:after:h-[2px] lg:after:left-0 lg:after:bottom-[5px] lg:after:bg-text';
-        const inactiveClasses = 'text-text/70 hover:text-text group lg:relative lg:after:content-[""] lg:after:absolute lg:after:w-0 lg:after:h-[2px] lg:after:left-0 lg:after:bottom-[5px] lg:after:bg-text lg:after:transition-all lg:after:duration-200 lg:after:ease-in-out lg:hover:lg:after:w-full';
+        const baseClasses = 'w-full block text-lg text-center font-bold text-text py-4 lg:py-2 lg:px-2 rounded-lg lg:rounded-none transition-colors duration-200';
+        const activeClasses = 'bg-tag text-text lg:bg-transparent lg:relative lg:after:content-[""] lg:after:absolute lg:after:w-full lg:after:h-[2px] lg:after:left-0 lg:after:bottom-[5px] lg:after:bg-purple';
+        const inactiveClasses = 'text-text/70 hover:text-text hover:bg-tag/70 lg:hover:bg-transparent group lg:relative lg:after:content-[""] lg:after:absolute lg:after:w-0 lg:after:h-[2px] lg:after:left-0 lg:after:bottom-[5px] lg:after:bg-purple lg:after:transition-all lg:after:duration-200 lg:after:ease-in-out lg:hover:lg:after:w-full';
     
         return `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
     };
@@ -38,7 +38,7 @@ export default function Header({ pathname }: { pathname: string }) {
     ];
 
     const headerClasses = [
-        'w-full', 'fixed', 'z-[1000]', 'h-header', 'transition-transform', 'duration-300', 'ease-in-out', 'border-b', 'border-border', 'text-text', 'bg-background', 'font-mono',
+        'w-full', 'fixed', 'z-[var(--z-header)]', 'h-header', 'transition-transform', 'duration-300', 'ease-in-out', 'border-b', 'border-border', 'text-text', 'bg-background/90', 'backdrop-blur-xl', 'font-mono',
         // Mobile styles
         'shadow-none', 'px-4',
         // Desktop styles
@@ -50,8 +50,8 @@ export default function Header({ pathname }: { pathname: string }) {
     const navClasses = [
         'items-center',
         // Mobile layout (base)
-        'fixed', 'top-header', 'right-0', 'h-[calc(100vh-theme(spacing.header))]', 'w-[250px]', 'bg-background', 
-        'flex', 'flex-col', 'p-0', 'gap-0', 'border-l', 'border-border', 'transition-all', 'duration-300', 'ease-in-out', 'z-[1000]',
+        'fixed', 'top-header', 'right-0', 'h-[calc(100dvh-theme(spacing.header))]', 'w-[min(18rem,82vw)]', 'bg-surface/95', 'backdrop-blur-xl', 
+        'flex', 'flex-col', 'p-2', 'gap-1', 'border-l', 'border-border', 'transition-all', 'duration-300', 'ease-in-out', 'z-[var(--z-overlay)]',
         // Mobile state
         isMenuOpen ? 'translate-x-0 opacity-100 pointer-events-auto' : 'translate-x-full opacity-0 pointer-events-none',
         // Desktop layout (overrides)
@@ -64,12 +64,12 @@ export default function Header({ pathname }: { pathname: string }) {
         <>
         <header onMouseEnter={() => setScrollDir('up')} className={headerClasses}>
             <div className="h-full w-full mx-auto flex justify-between items-center">
-                <a href="/" className="text-2xl font-bold text-text no-underline p-[0.5rem] lg:p-0">
+                <a href="/" className="rounded-lg text-2xl font-bold text-text no-underline p-[0.5rem] lg:p-0">
                     ViegPhunt
                 </a>
                 <button
                     type="button"
-                    className="p-2 w-[45px] h-[45px] flex items-center justify-center fill-current text-text transition-transform duration-200 ease-in-out z-[1200] lg:hidden active:scale-110"
+                    className="p-2 w-[45px] h-[45px] flex items-center justify-center fill-current text-text transition-transform duration-200 ease-in-out z-[calc(var(--z-overlay)+1)] lg:hidden active:scale-95"
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                     aria-controls="mobile-menu"
@@ -80,8 +80,9 @@ export default function Header({ pathname }: { pathname: string }) {
                     </svg>
                 </button>
                 <div
-                    className={`fixed top-header left-0 w-screen h-screen bg-black/20 backdrop-blur-sm transition-opacity z-[800] lg:hidden ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                    className={`fixed top-header left-0 w-screen h-[calc(100dvh-theme(spacing.header))] bg-background/75 backdrop-blur-sm transition-opacity z-[calc(var(--z-overlay)-1)] lg:hidden ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                     onClick={() => setIsMenuOpen(false)}
+                    aria-hidden="true"
                 />
                 <nav id="mobile-menu" className={navClasses}>
                     {navLinks.map(link => (
@@ -97,7 +98,7 @@ export default function Header({ pathname }: { pathname: string }) {
                                 setIsSearchOpen(true);
                                 setIsMenuOpen(false);
                             }}
-                            className="text-text transition-transform duration-300 ease-in-out hover:scale-[115%]"
+                            className="rounded-lg p-2 text-text transition-transform duration-300 ease-in-out hover:scale-110 active:scale-95"
                             aria-label="Search"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor" className="w-6 h-6">
