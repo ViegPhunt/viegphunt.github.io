@@ -85,41 +85,47 @@
         --section-stack: clamp(2.5rem, 5vw, 4.5rem);
         --content-measure: 68ch;
 
-        /* Dark Mode (Default) */
-        --color-background: #191919;
-        --color-surface: #212121;
-        --color-text: #ede0d4;
-        --color-border: #333333;
-        --color-link: #89b4fa;
-        --color-tag: #313131;
-        --color-shadow: #ede0d4;
-        --color-blue: #a2bffe;
-        --color-green: #a6e3a1;
-        --color-yellow: #f9e2af;
-        --color-purple: #c6a6e7;
-        --color-red: #f38ba8;
-        /* Semantic typography tokens mapped to theme colors */
+        /* Catppuccin Mocha */
+        --color-background: var(--ctp-mocha-base);
+        --color-surface: var(--ctp-mocha-mantle);
+        --color-raised: var(--ctp-mocha-surface0);
+        --color-text: var(--ctp-mocha-text);
+        --color-border: rgb(var(--ctp-mocha-surface2-rgb) / 0.34);
+        --color-link: var(--ctp-mocha-mauve);
+        --color-tag: rgb(var(--ctp-mocha-surface1-rgb) / 0.48);
+        --color-shadow: rgb(var(--ctp-mocha-crust-rgb) / 0.55);
+        --color-blue: var(--ctp-mocha-blue);
+        --color-green: var(--ctp-mocha-green);
+        --color-yellow: var(--ctp-mocha-yellow);
+        --color-purple: var(--ctp-mocha-mauve);
+        --color-red: var(--ctp-mocha-red);
+        --glass-border: rgb(var(--ctp-mocha-surface2-rgb) / 0.4);
+        --glass-highlight: rgb(var(--ctp-mocha-surface2-rgb) / 0.14);
+        --color-bg-main: var(--color-surface);
         --text-main: var(--color-text);
-        --text-muted: var(--color-border);
+        --text-muted: var(--ctp-mocha-subtext0);
     }
 
     .light {
-        /* Light Mode */
-        --color-background: #fffaf3;
-        --color-surface: #f0ede8;
-        --color-text: #191919;
-        --color-border: #bbbbbb;
-        --color-link: #006eff;
-        --color-tag: #e0e0e0;
-        --color-shadow: #808080;
-        --color-blue: #6595fc;
-        --color-green: #7be271;
-        --color-yellow: #fad688;
-        --color-purple: #af79e6;
-        --color-red: #f36d93;
-        /* Light mode overrides for semantic tokens */
+        /* Catppuccin Latte */
+        --color-background: var(--ctp-latte-base);
+        --color-surface: var(--ctp-latte-mantle);
+        --color-raised: var(--ctp-latte-surface0);
+        --color-text: var(--ctp-latte-text);
+        --color-border: rgb(var(--ctp-latte-surface2-rgb) / 0.62);
+        --color-link: var(--ctp-latte-mauve);
+        --color-tag: rgb(var(--ctp-latte-surface0-rgb) / 0.82);
+        --color-shadow: rgb(var(--ctp-latte-crust-rgb) / 0.85);
+        --color-blue: var(--ctp-latte-blue);
+        --color-green: var(--ctp-latte-green);
+        --color-yellow: var(--ctp-latte-yellow);
+        --color-purple: var(--ctp-latte-mauve);
+        --color-red: var(--ctp-latte-red);
+        --glass-border: rgb(var(--ctp-latte-surface2-rgb) / 0.72);
+        --glass-highlight: rgb(var(--ctp-latte-surface0-rgb) / 0.72);
+        --color-bg-main: var(--color-surface);
         --text-main: var(--color-text);
-        --text-muted: var(--color-border);
+        --text-muted: var(--ctp-latte-subtext0);
     }
 
     /* Base styles */
@@ -142,6 +148,23 @@
         line-height: 1.65;
         letter-spacing: -0.01em;
         text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 50% 0%, rgb(var(--ctp-mocha-mauve-rgb) / 0.12) 0%, transparent 46%),
+            radial-gradient(circle at 100% 100%, rgb(var(--ctp-mocha-blue-rgb) / 0.08) 0%, transparent 48%);
+    }
+
+    .light body::before {
+        background:
+            radial-gradient(circle at 18% 0%, rgb(var(--ctp-latte-lavender-rgb) / 0.2) 0%, transparent 42%),
+            radial-gradient(circle at 100% 96%, rgb(var(--ctp-latte-peach-rgb) / 0.14) 0%, transparent 44%);
     }
 
     h1,

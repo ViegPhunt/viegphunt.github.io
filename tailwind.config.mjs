@@ -1,3 +1,18 @@
+import typography from '@tailwindcss/typography';
+import { flavors } from '@catppuccin/palette';
+
+const catppuccinColors = Object.fromEntries(
+	Object.entries(flavors).map(([flavorName, flavor]) => [
+		flavorName,
+		Object.fromEntries(
+			Object.entries(flavor.colors).map(([colorName, color]) => [
+				colorName,
+				color.hex,
+			]),
+		),
+	]),
+);
+
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
@@ -15,8 +30,10 @@ export default {
 			},
 
 			colors: {
+				catppuccin: catppuccinColors,
 				background: 'var(--color-background)',
 				surface: 'var(--color-surface)',
+				raised: 'var(--color-raised)',
 				text: 'var(--color-text)',
 				border: 'var(--color-border)',
 				link: 'var(--color-link)',
@@ -245,6 +262,6 @@ export default {
 		},
 	},
 	plugins: [
-		require('@tailwindcss/typography'),
+		typography,
 	],
 }
