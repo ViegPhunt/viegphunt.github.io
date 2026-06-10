@@ -1,78 +1,80 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ScrollToTop() {
+    const buttonRef = useRef<HTMLButtonElement>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [footerHeight, setFooterHeight] = useState(0);
-    const [bottomOffset, setBottomOffset] = useState(50);
+    const isVisibleRef = useRef(false);
 
     useEffect(() => {
         const footer = document.querySelector('footer');
-        if (!footer) return;
+        const button = buttonRef.current;
+        let rafId = 0;
+        const baseOffset = 50;
 
-        const updateFooterHeight = () => {
-            const rect = footer.getBoundingClientRect();
-            setFooterHeight(rect.height);
-            document.documentElement.style.setProperty('--height-footer', `${rect.height}px`);
+        if (!button) return;
+
+        const updatePosition = () => {
+            rafId = 0;
+
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            const nextVisible = scrollY > 500;
+
+            if (nextVisible !== isVisibleRef.current) {
+                isVisibleRef.current = nextVisible;
+                setIsVisible(nextVisible);
+            }
+
+            if (footer) {
+                const footerTop = footer.getBoundingClientRect().top;
+                const overlap = Math.max(0, window.innerHeight - footerTop);
+                button.style.setProperty('--scroll-top-bottom', `${baseOffset + overlap}px`);
+            } else {
+                button.style.setProperty('--scroll-top-bottom', `${baseOffset}px`);
+            }
         };
 
-        updateFooterHeight();
-
-        const resizeObserver = new ResizeObserver(updateFooterHeight);
-        resizeObserver.observe(footer);
-
-        window.addEventListener('resize', updateFooterHeight);
-
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const docHeight = document.documentElement.scrollHeight;
-
-            setIsVisible(scrollY > 500);
-
-            const footerTop = docHeight - footerHeight;
-            const overlap = Math.max(0, scrollY + windowHeight - footerTop);
-            const ratio = Math.min(overlap / footerHeight, 1);
-
-            const newBottom = 50 + ratio * footerHeight;
-            setBottomOffset(newBottom);
+        const requestUpdate = () => {
+            if (rafId) return;
+            rafId = window.requestAnimationFrame(updatePosition);
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
+        const resizeObserver = footer ? new ResizeObserver(requestUpdate) : null;
+        resizeObserver?.observe(footer as Element);
+
+        requestUpdate();
+
+        window.addEventListener('scroll', requestUpdate, { passive: true });
+        window.addEventListener('resize', requestUpdate, { passive: true });
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', updateFooterHeight);
-            resizeObserver.disconnect();
+            window.removeEventListener('scroll', requestUpdate);
+            window.removeEventListener('resize', requestUpdate);
+            resizeObserver?.disconnect();
+            if (rafId) {
+                window.cancelAnimationFrame(rafId);
+            }
         };
-    }, [footerHeight]);
+    }, []);
 
     const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     };
 
     return (
         <button
+            ref={buttonRef}
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            style={{ bottom: `${bottomOffset}px` }}
-            className={`
-                fixed right-[50px] z-[1000] flex h-[50px] w-[50px] items-center justify-center rounded-full border-none cursor-pointer
-                bg-[var(--color-bg-main)] text-[var(--color-text)] shadow-[0_0px_8px_var(--color-shadow)]
-                transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]
-                group max-[1150px]:hidden
-                hover:-translate-y-[2px] hover:scale-[1.05] hover:shadow-[0_0_15px_var(--color-shadow)]
-                active:translate-y-0 active:scale-[0.95]
-                ${isVisible 
-                    ? 'visible translate-y-0 scale-100 opacity-100' 
-                    : 'invisible translate-y-[20px] scale-[0.8] opacity-0'
-                }
-            `}
+            data-visible={isVisible}
+            className="scroll-top-button group"
         >
             <svg 
                 width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                 className="transition-transform duration-200 ease-linear group-hover:-translate-y-[1px]"
+                aria-hidden="true"
             >
                 <path d="M7 14L12 9L17 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
