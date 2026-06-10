@@ -102,7 +102,7 @@ export default function TableOfContents() {
                             href={`#${heading.id}`}
                             onClick={(e) => handleClick(e, heading.id)}
                             className={`
-                                block rounded-r-md border-l px-3 py-1.5 -ml-[1px] transition-all duration-200
+                                block border-l px-3 py-1.5 -ml-[1px] transition-all duration-200
                                 hover:border-link hover:text-link
                                 ${
                                     isActive
@@ -146,30 +146,34 @@ export default function TableOfContents() {
                     <nav
                         id="mobile-toc-panel"
                         aria-label="Table of contents"
-                        className="surface-panel toc-container fixed bottom-20 left-4 max-h-[calc(100dvh-160px)] w-[250px] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-2xl p-4 backdrop-blur-xl"
+                        className="surface-panel toc-container fixed bottom-20 left-4 flex max-h-[calc(100dvh-160px)] w-[250px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl p-4 backdrop-blur-xl"
                     >
-                        <div className="sticky top-0 bg-surface/95 pb-2">
-                            <h3 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.16em] text-purple">
+                        <div className="relative z-10 shrink-0 bg-surface/95 pb-3">
+                            <h3 className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-purple">
                                 Table of contents
                             </h3>
                         </div>
 
-                        {renderHeadingList()}
+                        <div className="min-h-0 overflow-y-auto pt-1">
+                            {renderHeadingList()}
+                        </div>
                     </nav>
                 </div>
             )}
 
             <nav
                 aria-label="Table of contents"
-                className="surface-panel toc-container fixed right-8 top-[180px] hidden max-h-[calc(100dvh-220px)] w-[250px] overflow-y-auto rounded-2xl p-4 backdrop-blur-xl 2xl:block"
+                className="surface-panel toc-container fixed right-8 top-[180px] hidden max-h-[calc(100dvh-220px)] w-[250px] flex-col overflow-hidden rounded-2xl p-4 backdrop-blur-xl 2xl:flex"
             >
-                <div className="sticky top-0 bg-surface/95 pb-2">
-                    <h3 className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.16em] text-purple">
+                <div className="relative z-10 shrink-0 bg-surface/95 pb-3">
+                    <h3 className="font-mono text-xs font-bold uppercase tracking-[0.16em] text-purple">
                         Table of contents
                     </h3>
                 </div>
 
-                {renderHeadingList()}
+                <div className="min-h-0 overflow-y-auto pt-1">
+                    {renderHeadingList()}
+                </div>
             </nav>
         </>
     );
