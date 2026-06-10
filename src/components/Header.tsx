@@ -21,7 +21,9 @@ export default function Header({ pathname }: { pathname: string }) {
     const getLinkClass = (href: string) => {
         const normalizedPathname = pathname.replace(/\/$/, '') || '/';
         const normalizedHref = href.replace(/\/$/, '') || '/';
-        const isActive = normalizedPathname === normalizedHref;
+        const isActive = normalizedHref === '/'
+            ? normalizedPathname === '/'
+            : normalizedPathname === normalizedHref || normalizedPathname.startsWith(`${normalizedHref}/`);
         
         const baseClasses = 'w-full block text-lg text-center font-bold text-text py-4 lg:py-2 lg:px-2 rounded-lg lg:rounded-none transition-colors duration-200';
         const activeClasses = 'bg-tag text-text lg:bg-transparent lg:relative lg:after:content-[""] lg:after:absolute lg:after:w-full lg:after:h-[2px] lg:after:left-0 lg:after:bottom-[5px] lg:after:bg-purple';
