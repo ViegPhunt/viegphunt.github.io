@@ -19,7 +19,7 @@ export default defineConfig({
             filter: (page) => !page.includes('/404'),
         }),
         astroExpressiveCode({
-            themes: ['dark-plus', 'rose-pine-dawn'],
+            themes: ['catppuccin-mocha', 'catppuccin-latte'],
             styleOverrides: {
                 borderRadius: '0.5rem',
                 codeFontFamily: 'JetBrains Mono, monospace',
