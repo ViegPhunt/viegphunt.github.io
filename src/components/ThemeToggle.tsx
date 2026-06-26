@@ -25,10 +25,10 @@ export default function ThemeToggle() {
     useEffect(() => {
         if (theme === 'light') {
             document.documentElement.classList.add('light');
-            document.documentElement.setAttribute('data-theme', 'rose-pine-dawn');
+            document.documentElement.setAttribute('data-theme', 'catppuccin-latte');
         } else {
             document.documentElement.classList.remove('light');
-            document.documentElement.setAttribute('data-theme', 'dark-plus');
+            document.documentElement.setAttribute('data-theme', 'catppuccin-mocha');
         }
         localStorage.setItem('theme', theme);
     }, [theme]);
