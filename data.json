@@ -27,6 +27,10 @@
         }
     ],
     "about": {
+        "images": [
+            "ChaoTan2025.jpg",
+            "ThungLungTaXua.jpg"
+        ],
         "achievements": [
             {
                 "english": "Promising Awards - DENSO Factory Hackathon",

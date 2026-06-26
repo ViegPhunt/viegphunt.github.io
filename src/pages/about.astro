@@ -1,6 +1,21 @@
 ---
 import ListLayout from "@/layouts/ListLayout.astro";
 import data from "@/../data.json";
+import Stack from "@/components/ImageStack.tsx";
+
+const imageModules = import.meta.glob<{ default: ImageMetadata }>(
+	"@/assets/images/*",
+	{ eager: true }
+);
+
+const galleryImages = data.about.images
+	.map((filename) => imageModules[`/src/assets/images/${filename}`]?.default.src)
+	.filter((src): src is string => !!src);
+
+// Lấy kích thước ảnh đầu tiên để set đúng tỷ lệ container
+const firstMeta = imageModules[`/src/assets/images/${data.about.images[0]}`]?.default;
+const imgWidth  = firstMeta?.width  ?? 560;
+const imgHeight = firstMeta?.height ?? 420;
 
 // Content for the About page in both English and Vietnamese
 const content = {
@@ -81,6 +96,21 @@ function parseHighlight(text: string) {
 						/>
 					))
 				}
+			</div>
+		</div>
+
+		<div class="w-full flex justify-center pb-[var(--page-stack)]">
+			<div class="max-w-[600px] w-full" style={`aspect-ratio: ${imgWidth} / ${imgHeight};`}>
+				<Stack
+					client:load
+					images={galleryImages}
+					randomRotation={true}
+					sensitivity={200}
+					sendToBackOnClick={true}
+					autoplay={false}
+					autoplayDelay={2000}
+					pauseOnHover={false}
+				/>
 			</div>
 		</div>
 
