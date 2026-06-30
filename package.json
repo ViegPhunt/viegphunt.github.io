@@ -17,6 +17,7 @@
         "astro": "^5.16.11",
         "astro-expressive-code": "^0.44.0",
         "astro-seo": "^1.1.0",
+        "gsap": "^3.15.0",
         "motion": "^12.42.0",
         "photoswipe": "^5.4.4",
         "rehype-autolink-headings": "^7.1.0",

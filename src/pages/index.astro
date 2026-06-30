@@ -20,7 +20,7 @@ const projectsData = projects.map((p) => ({
 })).sort((a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime());
 
 const writeupDirs = writeupFolders.map((folder) => {
-	const writeup = writeups.find(w => w.slug.startsWith(folder));
+	const writeup = writeups.find((w) => w.slug.startsWith(folder));
 	return {
 		name: writeup?.data.title || folder,
 		path: folder,
@@ -33,38 +33,155 @@ const writeupDirs = writeupFolders.map((folder) => {
 });
 ---
 
-<ListLayout title="ViegPhunt">
-	<div class="page-stack w-full items-center text-center">
-			<div class="flex flex-col items-center gap-8 py-[var(--section-stack)] lg:gap-10">
-				<div class="flex-shrink-0 select-none">
-					<Image
-						src={avatarImage}
-						alt="Avatar"
-						width={200}
-						height={200}
-						format="webp"
-						quality={85}
-						loading="eager"
-						class="w-[160px] h-[160px] lg:w-[200px] lg:h-[200px] rounded-full object-cover border-[1px] border-border shadow-[0_18px_44px_-28px_var(--color-shadow)]"
-					/>
-				</div>
+<script>
+	import gsap from "gsap";
 
-				<div class="w-full max-w-3xl flex-1">
-					<h1 class="text-[1.5rem] lg:text-[2.5rem] font-bold text-text mb-4 lg:mb-5">
-						Welcome to my personal website!
-					</h1>
-					<p class="text-[1.1rem] lg:text-[1.2rem] leading-[1.8] text-text/80">
-						A collection of projects, CTF write-ups, and technology notes I've
-						gathered through my learning process.
-					</p>
-				</div>
+	const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!?<>";
+	const TARGET = "ViegPhunt";
+
+	// Returns a random character from the pool
+	function randomChar() {
+		return CHARS[Math.floor(Math.random() * CHARS.length)];
+	}
+
+	// Fallback: just hide the overlay (content is always visible underneath)
+	function hideOverlay() {
+		const overlay = document.getElementById("hacker-overlay");
+		if (overlay) overlay.style.display = "none";
+	}
+
+	function runHackerIntro() {
+		const overlay    = document.getElementById("hacker-overlay") as HTMLElement | null;
+		const textEl     = document.getElementById("hacker-text")    as HTMLElement | null;
+		const subtitleEl = document.getElementById("hacker-subtitle") as HTMLElement | null;
+
+		// Guard: if any element is missing, skip the animation
+		if (!overlay || !textEl || !subtitleEl) {
+			hideOverlay();
+			return;
+		}
+
+		// Show overlay on top of the page content
+		overlay.style.display = "flex";
+		gsap.set(overlay, { autoAlpha: 1, yPercent: 0 });
+
+		// Safety net: force-hide overlay after 5s in case anything goes wrong
+		const fallbackTimer = setTimeout(hideOverlay, 5000);
+
+		// ── Phase 1: Text scramble ──────────────────────────────────────
+		const lockDelay    = 800;  // ms before starting to lock characters
+		const lockInterval = 100;  // ms between each character lock
+
+		let lockedCount = 0; // number of characters locked so far
+		let scrambleId  = 0;
+
+		// Cycling subtitle messages shown below the scramble text
+		const subtitles = ["Initializing...", "Loading modules...", "Access granted."];
+		let subtitleIdx = 0;
+
+		// Rotate subtitle text every 600ms
+		const subtitleId = window.setInterval(() => {
+			subtitleIdx = (subtitleIdx + 1) % subtitles.length;
+			subtitleEl.textContent = subtitles[subtitleIdx];
+		}, 600);
+
+		// Re-render the scramble text at 20fps; already-locked chars stay fixed
+		scrambleId = window.setInterval(() => {
+			let out = "";
+			for (let i = 0; i < TARGET.length; i++) {
+				out += i < lockedCount ? TARGET[i] : randomChar();
+			}
+			textEl.textContent = out;
+		}, 50);
+
+		// After lockDelay, start locking one character at a time
+		setTimeout(() => {
+			const lockNext = () => {
+				if (lockedCount >= TARGET.length) {
+					// All characters locked — clean up and trigger the reveal
+					clearInterval(scrambleId);
+					clearInterval(subtitleId);
+					textEl.textContent = TARGET;
+					subtitleEl.textContent = "Welcome.";
+					setTimeout(() => {
+						clearTimeout(fallbackTimer);
+						revealPage(overlay);
+					}, 480);
+					return;
+				}
+				lockedCount++;
+				setTimeout(lockNext, lockInterval);
+			};
+			lockNext();
+		}, lockDelay);
+	}
+
+	// ── Phase 2: Slide overlay up, revealing the page underneath ───────
+	function revealPage(overlay: HTMLElement) {
+		// Skip animation for users who prefer reduced motion
+		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			overlay.style.display = "none";
+			return;
+		}
+
+		// Slide the overlay upward off-screen, content is revealed as-is underneath
+		gsap.to(overlay, {
+			yPercent: -100,
+			duration: 0.7,
+			ease: "power3.inOut",
+			onComplete: () => { overlay.style.display = "none"; },
+		});
+	}
+
+	// Run on every Home page load, including View Transitions navigation
+	document.addEventListener("astro:page-load", () => {
+		if (window.location.pathname === "/") {
+			runHackerIntro();
+		} else {
+			// On other pages, ensure the overlay is gone
+			const overlay = document.getElementById("hacker-overlay");
+			if (overlay) overlay.style.display = "none";
+		}
+	});
+</script>
+
+<ListLayout title="ViegPhunt">
+	<!-- Hacker intro overlay -->
+	<div id="hacker-overlay" aria-hidden="true">
+		<p class="hacker-text" id="hacker-text">&#8203;</p>
+		<p class="hacker-subtitle" id="hacker-subtitle">Initializing...</p>
+	</div>
+
+	<div id="hero-content" class="page-stack w-full items-center text-center">
+		<div class="flex flex-col items-center gap-8 py-[var(--section-stack)] lg:gap-10">
+			<div class="flex-shrink-0 select-none">
+				<Image
+					src={avatarImage}
+					alt="Avatar"
+					width={200}
+					height={200}
+					format="webp"
+					quality={85}
+					loading="eager"
+					class="w-[160px] h-[160px] lg:w-[200px] lg:h-[200px] rounded-full object-cover border-[1px] border-border shadow-[0_18px_44px_-28px_var(--color-shadow)]"
+				/>
 			</div>
 
-			<div class="section-divider"></div>
-
-			<div class="w-full page-stack">
-				<SearchArticles />
-				<ArticleCards projects={projectsData} writeups={writeupDirs} />
+			<div class="w-full max-w-3xl flex-1">
+				<h1 class="text-[1.5rem] lg:text-[2.5rem] font-bold text-text mb-4 lg:mb-5">
+					Welcome to my personal website!
+				</h1>
+				<p class="text-[1.1rem] lg:text-[1.2rem] leading-[1.8] text-text/80">
+					A collection of projects, CTF write-ups, and technology notes I've gathered through my learning process.
+				</p>
 			</div>
 		</div>
+
+		<div class="section-divider"></div>
+
+		<div class="w-full page-stack">
+			<SearchArticles />
+			<ArticleCards projects={projectsData} writeups={writeupDirs} />
+		</div>
+	</div>
 </ListLayout>
