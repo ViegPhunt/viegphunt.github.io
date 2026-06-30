@@ -34,7 +34,15 @@ export default function ThemeToggle() {
     }, [theme]);
 
     const toggleTheme = () => {
+        const root = document.documentElement;
+        root.classList.add('no-theme-transition');
         setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+        // Double rAF: wait for browser to paint the new theme before restoring transitions
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                root.classList.remove('no-theme-transition');
+            });
+        });
     };
 
     return (

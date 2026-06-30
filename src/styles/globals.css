@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -137,6 +137,13 @@
         @apply m-0 p-0 box-border;
         scrollbar-color: transparent transparent;
         -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Freeze all transitions while switching theme to prevent color bleed */
+    .no-theme-transition,
+    .no-theme-transition * {
+        transition-duration: 0ms !important;
+        animation-duration: 0ms !important;
     }
 
     html {
