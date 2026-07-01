@@ -90,8 +90,7 @@
         --z-floating: 700;
 
         /* Catppuccin Mocha */
-        --color-background-rgb: var(--ctp-mocha-base-rgb);
-        --color-background: rgb(var(--color-background-rgb));
+        --color-background: var(--ctp-mocha-base);
         --color-surface: var(--ctp-mocha-mantle);
         --color-raised: var(--ctp-mocha-surface0);
         --color-text: var(--ctp-mocha-text);
@@ -113,8 +112,7 @@
 
     .light {
         /* Catppuccin Latte */
-        --color-background-rgb: var(--ctp-latte-base-rgb);
-        --color-background: rgb(var(--color-background-rgb));
+        --color-background: var(--ctp-latte-base);
         --color-surface: var(--ctp-latte-mantle);
         --color-raised: var(--ctp-latte-surface0);
         --color-text: var(--ctp-latte-text);
@@ -594,18 +592,4 @@
     opacity: 0.6;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-}
-
-/*
- * iOS Safari fix: backdrop-filter on position:fixed elements requires GPU compositing.
- * Tailwind's translate-x/y classes use 2D transforms which do NOT promote to a GPU layer.
- * will-change: transform forces iOS Safari to create a compositing layer,
- * enabling backdrop-filter to work correctly.
- * Scoped to @supports(-webkit-backdrop-filter) so it only targets webkit browsers.
- */
-@supports (-webkit-backdrop-filter: blur(1px)) {
-    header,
-    nav#mobile-menu {
-        will-change: transform;
-    }
 }
