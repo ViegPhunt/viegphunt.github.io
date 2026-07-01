@@ -31,7 +31,7 @@ export default {
 
 			colors: {
 				catppuccin: catppuccinColors,
-				background: 'var(--color-background)',
+				background: 'rgb(var(--color-background-rgb) / <alpha-value>)',
 				surface: 'var(--color-surface)',
 				raised: 'var(--color-raised)',
 				text: 'var(--color-text)',

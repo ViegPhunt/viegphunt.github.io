@@ -90,7 +90,8 @@
         --z-floating: 700;
 
         /* Catppuccin Mocha */
-        --color-background: var(--ctp-mocha-base);
+        --color-background-rgb: var(--ctp-mocha-base-rgb);
+        --color-background: rgb(var(--color-background-rgb));
         --color-surface: var(--ctp-mocha-mantle);
         --color-raised: var(--ctp-mocha-surface0);
         --color-text: var(--ctp-mocha-text);
@@ -112,7 +113,8 @@
 
     .light {
         /* Catppuccin Latte */
-        --color-background: var(--ctp-latte-base);
+        --color-background-rgb: var(--ctp-latte-base-rgb);
+        --color-background: rgb(var(--color-background-rgb));
         --color-surface: var(--ctp-latte-mantle);
         --color-raised: var(--ctp-latte-surface0);
         --color-text: var(--ctp-latte-text);
