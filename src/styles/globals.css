@@ -595,3 +595,17 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
 }
+
+/*
+ * iOS Safari fix: backdrop-filter on position:fixed elements requires GPU compositing.
+ * Tailwind's translate-x/y classes use 2D transforms which do NOT promote to a GPU layer.
+ * will-change: transform forces iOS Safari to create a compositing layer,
+ * enabling backdrop-filter to work correctly.
+ * Scoped to @supports(-webkit-backdrop-filter) so it only targets webkit browsers.
+ */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+    header,
+    nav#mobile-menu {
+        will-change: transform;
+    }
+}
